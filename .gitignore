@@ -13,4 +13,5 @@
 /traces-ia/
 .DS_Store
 Thumbs.db
+compose.override.yaml
 ###< project specific ###

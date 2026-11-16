@@ -1,0 +1,10 @@
+.git
+.github
+vendor/
+var/
+traces-ia/
+md files/
+compose.override.yaml
+compose.override.yaml.dist
+.env.local
+.env.*.local

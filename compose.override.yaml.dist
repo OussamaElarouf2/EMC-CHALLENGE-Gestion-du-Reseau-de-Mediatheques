@@ -1,0 +1,7 @@
+# compose.override.yaml.dist — Local development template
+# Copy to compose.override.yaml to expose MySQL on 127.0.0.1 for local dev.
+# Run: docker compose up -d db
+services:
+  db:
+    ports:
+      - "127.0.0.1:3306:3306"
