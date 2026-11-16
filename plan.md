@@ -29,6 +29,12 @@ If something is ambiguous, **ask, do not guess.** If you notice a mistake in one
 - Run any Git write command (`add`, `commit`, `push`, `rebase`, `merge`, `reset`, `checkout` that discards changes). Read-only commands (`status`, `diff`, `log`) are fine.
 - Put a secret, a real password or an API key in a versioned file.
 
+### Environment policy: Local development vs Docker delivery
+- **Daily development**: runs **locally** on Windows with PHP 8.2 and Composer in the PATH. The candidate installs/verifies them personally; the agent never installs host software.
+- **Docker**: the **delivery** environment (Level 5) and the benchmark for "works on a clean machine". The candidate tests `docker compose up --build` after each major milestone and from a fresh clone before final submission.
+- **Local services**: only MySQL 8 runs in Docker for local development. A dev-only `compose.override.yaml` exposes MySQL on 127.0.0.1; the delivered `compose.yaml` must not expose the database port needlessly.
+- **Reproducibility**: `composer.json` pins `"config": {"platform": {"php": "8.2.0"}}` so `composer.lock` is strictly bound to PHP 8.2. The Docker image installs the exact same PHP extensions as the local setup (`intl`, `pdo_mysql`, `mbstring`, `xml`, `ctype`, `iconv`, `zip`). List documented in `INSTALL.md`.
+
 ---
 
 ## 1. Project context
@@ -86,15 +92,14 @@ Needs: catalogue (works, editions, copies spread over 2 sites) · members and su
 ## 3. Git rules (mandatory)
 
 - **Public** repository on my own GitHub account, created on day 1, first commit as soon as the Symfony skeleton exists.
-- **I make every commit myself.** You supply the proposed message and the file list.
+- **I make every commit myself.** You supply the proposed message and the explicit file list. **Never use `git add .`**. Run `git status` and `git diff --stat` before proposing the commit.
+- **Progress tracker updates**: keep `plan.md` progress tracker checkmarks in a separate `docs:` commit.
 - **Small, frequent, focused commits** (every 30 to 45 minutes at most), one concern per commit.
 - **Conventional Commits** in English: `feat:`, `fix:`, `test:`, `docs:`, `refactor:`, `chore:`, `build:` (Docker), `style:`. Example: `feat: refuse loan extension when a reservation is waiting`.
-- **AI trailer**: when a commit contains code you wrote, your proposed message ends with
-  `Co-authored-by: Antigravity <noreply@google.com>` (adjust to the tool's real identity if needed).
-  Commits that contain only things I wrote by hand (decision documents, my own edits) carry no trailer. I decide the trailer in the end.
+- **AI trailer**: omitted per user instruction.
 - **Intact history**: never `rebase`, never squash, never amend a pushed commit, never `push --force`. If a branch is used, merge it with `--no-ff`.
 - **Push often**; every evening the repo must be in a working state, tests green, pushed.
-- Never commit: `.env` / `.env.local` (only `.env.example`), keys, real passwords, `vendor/`, `var/`, raw AI traces.
+- **.env policy**: `.env` is committed with non-secret development placeholders only (Symfony standard). `.env.local` and `.env.*.local` are git-ignored. `.env.example` is a documented copy of all variables. The MySQL password in `DATABASE_URL` is a dev-only placeholder and must be overridden by environment variables in Docker. Never commit: `.env.local`, keys, real passwords, `vendor/`, `var/`, raw AI traces.
 
 ### Typical commit breakdown for one feature
 
@@ -147,7 +152,7 @@ Documentation is part of the grade and must never be postponed to the end. After
 
 ### 5.3 Security
 
-- **Secrets**: environment variables only. `.env.local` and credentials are in `.gitignore`; `.env.example` is kept current and contains no secret. Demo account passwords are documented as demo-only in `INSTALL.md`.
+- **Secrets & .env**: environment variables only. `.env` is committed with non-secret development placeholders (Symfony convention). `.env.local` and credentials are in `.gitignore`; `.env.example` is kept current as a documented copy of all variables without secrets. The MySQL password in `DATABASE_URL` is a dev-only placeholder and must be overridden by environment variables in Docker (Step 2). Demo account passwords are documented as demo-only in `INSTALL.md`.
 - **Authentication**: Symfony Security, hashed passwords (`auto` hasher), never plain text.
 - **Authorization**: `access_control` in `security.yaml` **and** fine-grained checks via **Voters** (e.g. a member only sees their own loans). Least privilege. Role hierarchy: `ROLE_ADMIN` > `ROLE_LIBRARIAN` > `ROLE_MEMBER`.
 - **Anti-IDOR**: always verify that the requested resource belongs to the logged-in user.
@@ -162,13 +167,16 @@ Documentation is part of the grade and must never be postponed to the end. After
 - **Docker**: non-root containers if possible, MySQL port not exposed needlessly, passwords passed via environment variables.
 - **Before the final submission**: secret audit of the repository and of the AI-traces archive (`git grep`, manual review).
 
-### 5.4 Data integrity and concurrency
+### 5.4 Data integrity, concurrency and reproducibility
 
 - **Database constraints** in addition to application validation: foreign keys, `UNIQUE` (ISBN, copy barcode, email), `NOT NULL`, indexes on search and join columns.
 - **Transactions** (`EntityManager::wrapInTransaction()`) for every multi-write operation (borrow, return, queue processing, transfer).
 - **No double loan**: pessimistic lock (`LockMode::PESSIMISTIC_WRITE`) on the copy while borrowing, or optimistic locking (`#[ORM\Version]`) with proper exception handling. I validate the choice at the relevant step.
 - **Money**: never `float`. Use `DECIMAL` / strings (or integer cents).
 - **Dates**: `DateTimeImmutable`, stored in UTC, displayed in `Africa/Casablanca`.
+- **Platform pinning**: `composer.json` pins `"config": {"platform": {"php": "8.2.0"}}` to guarantee that `composer.lock` is strictly reproducible and compatible with PHP 8.2 across machines.
+- **Identical extensions**: the Docker delivery image must install the exact same PHP extensions as the local setup (`intl`, `pdo_mysql`, `mbstring`, `xml`, `ctype`, `iconv`, `zip`). Documented in `INSTALL.md`.
+- **Database isolation**: MySQL 8 runs in Docker for local development (exposed on 127.0.0.1:3306 via dev-only `compose.override.yaml`), ensuring identical database behavior between dev and production delivery.
 
 ### 5.5 Tests
 
@@ -193,16 +201,17 @@ Documentation is part of the grade and must never be postponed to the end. After
 
 | Need | Choice | Note |
 |---|---|---|
-| Framework | Symfony 7.4, PHP 8.2+ | Imposed |
-| ORM / DB | Doctrine ORM + Migrations, MySQL 8 | Imposed; **never** `schema:update --force`, migrations only |
+| Framework | Symfony 7.4, PHP 8.2+ | Imposed; platform pinned to `8.2.0` in `composer.json` |
+| Local Dev | PHP 8.2 + Composer on Windows | Daily dev runs locally with PHP extensions: intl, zip, pdo_mysql, mbstring, xml, ctype, iconv |
+| ORM / DB | Doctrine ORM + Migrations, MySQL 8 | Imposed; **never** `schema:update --force`, migrations only. MySQL runs in Docker (127.0.0.1:3306 via `compose.override.yaml` for dev) |
 | Back-office | **EasyAdmin** | Fast CRUD for level 1 |
 | Demo data | **DoctrineFixturesBundle + Faker** | ~300 copies, reproducible (fixed seed) |
 | Front end | **Twig + Bootstrap 5 (CDN)** | No JS build step |
 | Auth | Symfony Security | 3 roles |
 | Tests | PHPUnit + `MockClock` + `MockHttpClient` | |
 | External API | `symfony/http-client` → Open Library | No API key |
-| Docker | `compose.yaml`: PHP-FPM + Nginx (or Caddy) + MySQL 8 | Entrypoint: wait for DB, migrate, load fixtures |
-| Quality | PHP-CS-Fixer (PSR-12), PHPStan | Proposed at step 0 |
+| Docker | `compose.yaml`: PHP-FPM + Nginx + MySQL 8 | Delivery environment (level 5); tested with `docker compose up --build` |
+| Quality | PHP-CS-Fixer (PSR-12), PHPStan | Level 6 proposed |
 
 > Any extra dependency must be proposed to me, with its justification, before `composer require`.
 
@@ -385,11 +394,11 @@ Read `docs/Project statement/` and this `plan.md` in full, then **do nothing els
 
 ## 15. Progress tracker (update after every validated step)
 
-**Last update:** 2026-11-16 19:50 · **Current step:** Step 0 complete (ready for Step 1)
+**Last update:** 2026-11-16 22:05 · **Current step:** Step 1 complete (ready for Step 2)
 
 ### Day 1
 - [x] 0 Scoping, GitHub repo, briefs copied to `docs/Project statement/`
-- [ ] 1 Symfony 7.4 skeleton + first push
+- [x] 1 Symfony 7.4 skeleton + first push
 - [ ] 2 Docker (stack boots)
 - [ ] 3 `MODELE.md` validated + initial `DECISIONS.md`
 - [ ] 4 Entities + migrations
