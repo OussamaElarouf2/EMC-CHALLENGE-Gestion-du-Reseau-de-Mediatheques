@@ -44,7 +44,7 @@ Pre-selection for a PFE (end-of-studies internship) at **Education Media Company
 
 ### 1.2 Reference documents
 
-The official briefs are in the repository under `docs/enonce/`: `README.md`, `00-demarche.md`, `sujet-4-mediatheque.md` (the other three subjects are out of scope). **When in doubt about a requirement, re-read these files.**
+The official briefs are in the repository under `docs/Project statement/`: `README.md`, `00-demarche.md`, `sujet-4-mediatheque.md` (the other three subjects are out of scope). **When in doubt about a requirement, re-read these files.**
 
 ### 1.3 The subject in short
 
@@ -214,7 +214,7 @@ Documentation is part of the grade and must never be postponed to the end. After
 
 Proposal:
 - **English** for code (classes, methods, tables, columns), comments, commit messages, branch names, this plan, and `docs/ai-log/`.
-- **French** for the user interface and for the documents aimed at the evaluators (`README.md`, `INSTALL.md`, `docs/MODELE.md`, `docs/DECISIONS.md`, design note), since the evaluators are French-speaking.
+- **French** for the user interface and for the documents aimed at the evaluators (`README.md`, `INSTALL.md`, `docs/MODELE.md`, `docs/DECISIONS.md`, design note).
 
 Consistent domain vocabulary (to be listed at the top of `docs/MODELE.md`):
 Work (œuvre), Edition (édition), Copy (exemplaire), Member (adhérent), Loan (prêt), Reservation (réservation), Penalty (pénalité), Plan (formule d'abonnement), Branch (site), Transfer (transfert).
@@ -278,7 +278,7 @@ Work (œuvre), Edition (édition), Copy (exemplaire), Member (adhérent), Loan (
 
 | # | Step | Time | Deliverable | Level |
 |---|---|---|---|---|
-| 0 | **Scoping**: read the briefs, copy them to `docs/enonce/`, re-read this plan, validate language convention, quality tools and Git strategy. I create the GitHub repository. | 20 min | Agreement on method | — |
+| 0 | **Scoping**: read the briefs, copy them to `docs/Project statement/`, re-read this plan, validate language convention, quality tools and Git strategy. I create the GitHub repository. | 20 min | Agreement on method | — |
 | 1 | **Symfony 7.4 skeleton**, `.gitignore`, `.env.example`, first commit and push. | 30 min | Project boots | 5 (start) |
 | 2 | **Docker right now**: `compose.yaml`, PHP Dockerfile, Nginx, MySQL 8 (healthcheck), entrypoint. Check `docker compose up`. | 45 min | Running stack | 5 (start) |
 | 3 | **Data model**: `docs/MODELE.md` (Mermaid) **validated before any code**, then initial `DECISIONS.md` (questions to settle). | 1 h | Validated model | 1 |
@@ -379,16 +379,16 @@ After execution: verification output, list of changed files, proposed commit mes
 
 ## 14. First message to execute
 
-Read `docs/enonce/` and this `plan.md` in full, then **do nothing else** except: summarize your understanding of the project in 10 lines, list the ambiguities or risks you see, and present the **PLAN for step 0** using the format in section 13. Then wait for my OK.
+Read `docs/Project statement/` and this `plan.md` in full, then **do nothing else** except: summarize your understanding of the project in 10 lines, list the ambiguities or risks you see, and present the **PLAN for step 0** using the format in section 13. Then wait for my OK.
 
 ---
 
 ## 15. Progress tracker (update after every validated step)
 
-**Last update:** _(date/time)_ · **Current step:** _(number)_
+**Last update:** 2026-11-16 19:50 · **Current step:** Step 0 complete (ready for Step 1)
 
 ### Day 1
-- [ ] 0 Scoping, GitHub repo, briefs copied to `docs/enonce/`
+- [x] 0 Scoping, GitHub repo, briefs copied to `docs/Project statement/`
 - [ ] 1 Symfony 7.4 skeleton + first push
 - [ ] 2 Docker (stack boots)
 - [ ] 3 `MODELE.md` validated + initial `DECISIONS.md`
