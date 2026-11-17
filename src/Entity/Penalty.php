@@ -129,4 +129,9 @@ class Penalty
     {
         return $this->createdAt;
     }
+
+    public function __toString(): string
+    {
+        return sprintf('Pénalité #%d (%.2f MAD)', $this->id ?? 0, (float) $this->amount);
+    }
 }

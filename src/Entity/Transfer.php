@@ -160,4 +160,9 @@ class Transfer
         $this->receivedAt = $receivedAt;
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return sprintf('Transfert #%d — %s', $this->id ?? 0, $this->copy->getBarcode());
+    }
 }

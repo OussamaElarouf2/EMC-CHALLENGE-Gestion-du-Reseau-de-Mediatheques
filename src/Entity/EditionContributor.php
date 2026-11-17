@@ -96,4 +96,9 @@ class EditionContributor
         $this->position = $position;
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return sprintf('%s - %s (%s)', $this->edition->getTitle(), $this->contributor->getName(), $this->role->value);
+    }
 }

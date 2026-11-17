@@ -182,4 +182,9 @@ class Reservation
         $this->fulfilledAt = $fulfilledAt;
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return sprintf('Réservation #%d — %s', $this->id ?? 0, $this->edition->getTitle());
+    }
 }

@@ -214,4 +214,9 @@ class Edition
         $this->contributors->removeElement($contributor);
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return sprintf('%s (%d)', $this->title, $this->publicationYear);
+    }
 }

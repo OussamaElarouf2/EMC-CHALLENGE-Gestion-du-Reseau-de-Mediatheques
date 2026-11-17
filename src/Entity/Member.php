@@ -126,4 +126,9 @@ class Member
     {
         return $this->createdAt;
     }
+
+    public function __toString(): string
+    {
+        return sprintf('%s (%s)', $this->membershipNumber, $this->user->getEmail());
+    }
 }

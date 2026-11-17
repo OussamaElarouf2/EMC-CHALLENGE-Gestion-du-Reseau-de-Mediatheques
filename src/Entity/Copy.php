@@ -110,4 +110,9 @@ class Copy
     {
         return $this->createdAt;
     }
+
+    public function __toString(): string
+    {
+        return sprintf('%s [%s]', $this->barcode, $this->edition->getTitle());
+    }
 }

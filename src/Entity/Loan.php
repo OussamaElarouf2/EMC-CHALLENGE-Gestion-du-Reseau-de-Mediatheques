@@ -164,4 +164,9 @@ class Loan
         $this->activeCopyId = null;
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return sprintf('Prêt #%d — %s', $this->id ?? 0, $this->copy->getBarcode());
+    }
 }

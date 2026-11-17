@@ -129,4 +129,9 @@ class Plan
         $this->penaltyRatePerDay = $penaltyRatePerDay;
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->name;
+    }
 }

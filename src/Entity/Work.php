@@ -74,4 +74,9 @@ class Work
         $this->editions->removeElement($edition);
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->originalTitle;
+    }
 }
