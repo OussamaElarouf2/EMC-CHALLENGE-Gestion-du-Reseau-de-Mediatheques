@@ -80,4 +80,5 @@ php bin/phpunit
 - [Guide d'Installation](INSTALL.md) : Prérequis, déploiement Docker clé en main en 1 commande et dépannage.
 - [Modèle de Données](docs/MODELE.md) : Schéma entité-association Mermaid, dictionnaire de données, contraintes d'intégrité, verrous de concurrence et matrice complète des 85 tests.
 - [Journal des Décisions d'Architecture](docs/DECISIONS.md) : Réponses argumentées aux 5 questions du sujet et arbitrages techniques formels (**DEC-001 à DEC-014**).
+- [Traces d'Usage de l'IA & Rétrospective](docs/ai-log/LISEZMOI.md) : Guide explicatif des outils utilisés, structure des logs et 3 retours d'expérience concrets (+15 pts bonus). Archive complète : [traces-ia.zip](traces-ia.zip).
 - [Plan de Développement](plan.md) : Cadre méthodologique, protocole en 5 temps et journal de suivi pas à pas.

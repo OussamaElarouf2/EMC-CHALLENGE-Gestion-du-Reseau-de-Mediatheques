@@ -197,7 +197,7 @@ def build_pdf(filename="note-de-cadrage.pdf"):
         bullet_style
     ))
     story.append(Paragraph(
-        "• <b>Contrôle et arbitrage de l'ingénieur</b> : Correction de requêtes DQL Doctrine 3 générées par l'IA (interdiction de sélection d'entités non racines avec <code>GROUP BY</code>) et ajustements fins des contraintes de concurrence. "
+        "• <b>Contrôle et arbitrage de l'ingénieur</b> : Correction de choix inadaptés de l'IA (logique de réservation risquant d'allouer deux fois un livre en transit, décompte prématuré des 5 jours avant l'arrivée du colis ou inversions de paramètres). "
         "La couverture exhaustive de <b>85 tests automatisés (382 assertions passantes à 100%)</b> a assuré une validation continue sans faille.",
         bullet_style
     ))

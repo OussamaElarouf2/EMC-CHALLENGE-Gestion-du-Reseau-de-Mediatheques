@@ -30,7 +30,7 @@ Le projet a été découpé selon les 5 niveaux progressifs de l'énoncé, gouve
 ### 4. Rôle et Supervision des Outils d'Intelligence Artificielle
 Les outils d'IA générative ont été mobilisés comme un accélérateur d'ingénierie sous contrôle humain permanent :
 - **Apports à forte valeur ajoutée** : Génération rapide des structures d'entités, mise en place des gabarits Twig / Bootstrap 5, élaboration de jeux de données réalistes via Faker, et rédaction des cas de tests nominaux et aux limites.
-- **Supervision et arbitrage humain** : L'IA a parfois proposé des simplifications inadaptées (ex: requêtes DQL Doctrine 3 sélectionnant des entités non racines dans un `GROUP BY`, ou omissions de typage strict sur les formulaires). L'esprit critique de l'ingénieur, appuyé par la compilation statique et la suite de tests PHPUnit (85 tests, 382 assertions passants à 100%), a permis d'isoler, corriger et valider chaque composant.
+- **Supervision et arbitrage humain** : L'IA a parfois proposé des choix inadaptés ou commis des erreurs (ex: logique de réservation risquant d'allouer deux fois un livre en transit, décompte prématuré du délai de retrait de 5 jours avant l'arrivée physique du document, ou inversions de paramètres dans le code). La vigilance du développeur et le filet de sécurité de **85 tests automatisés (382 assertions passantes à 100%)** ont permis d'isoler, corriger et valider chaque règle métier.
 
 ### 5. Perspectives d'Évolution (Avec une Semaine Supplémentaire)
 Avec un délai additionnel de 7 jours, les extensions suivantes seraient implémentées :
