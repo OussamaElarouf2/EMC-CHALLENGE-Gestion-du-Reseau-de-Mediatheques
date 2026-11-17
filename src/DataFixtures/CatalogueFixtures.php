@@ -59,6 +59,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1862,
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/8225261-M.jpg',
             ],
             [
                 'title' => 'Notre-Dame de Paris',
@@ -67,6 +68,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1831,
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/8315124-M.jpg',
             ],
             [
                 'title' => 'L\'Étranger',
@@ -75,6 +77,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1942,
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/11153218-M.jpg',
             ],
             [
                 'title' => 'La Peste',
@@ -83,6 +86,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1947,
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/8231999-M.jpg',
             ],
             [
                 'title' => 'Le Petit Prince',
@@ -92,6 +96,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
                 'isPopular' => true,
+                'cover' => 'https://covers.openlibrary.org/b/id/10524458-M.jpg',
             ],
             [
                 'title' => '1984',
@@ -100,6 +105,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1949,
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/7222246-M.jpg',
             ],
             [
                 'title' => 'La Ferme des animaux',
@@ -108,6 +114,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1945,
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/11261770-M.jpg',
             ],
             [
                 'title' => 'Le Comte de Monte-Cristo',
@@ -116,6 +123,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1844,
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/8774134-M.jpg',
             ],
             [
                 'title' => 'Les Trois Mousquetaires',
@@ -124,6 +132,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1844,
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/8235111-M.jpg',
             ],
             [
                 'title' => 'Du côté de chez Swann',
@@ -132,6 +141,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1913,
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/8318182-M.jpg',
             ],
             [
                 'title' => 'Germinal',
@@ -140,6 +150,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1885,
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/8276632-M.jpg',
             ],
             [
                 'title' => 'Vingt mille lieues sous les mers',
@@ -148,6 +159,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1870,
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/8235288-M.jpg',
             ],
             [
                 'title' => 'Le Seigneur des Anneaux : La Communauté de l\'Anneau',
@@ -156,6 +168,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1954,
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/8231856-M.jpg',
             ],
             [
                 'title' => 'Harry Potter à l\'école des sorciers',
@@ -164,6 +177,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1997,
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/10521270-M.jpg',
             ],
             [
                 'title' => 'Cent ans de solitude',
@@ -172,6 +186,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1967,
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/8258388-M.jpg',
             ],
             [
                 'title' => 'La Métamorphose',
@@ -180,6 +195,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1915,
                 'type' => MediaType::BOOK,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/8276688-M.jpg',
             ],
 
             // Comics (7)
@@ -190,6 +206,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1936,
                 'type' => MediaType::COMIC,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/10414343-M.jpg',
             ],
             [
                 'title' => 'Tintin au Tibet',
@@ -198,6 +215,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1960,
                 'type' => MediaType::COMIC,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/7036668-M.jpg',
             ],
             [
                 'title' => 'Astérix le Gaulois',
@@ -207,6 +225,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1961,
                 'type' => MediaType::COMIC,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/6959146-M.jpg',
             ],
             [
                 'title' => 'Astérix et Cléopâtre',
@@ -216,6 +235,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1965,
                 'type' => MediaType::COMIC,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/7112028-M.jpg',
             ],
             [
                 'title' => 'Gaston Lagaffe : Gare aux gaffes',
@@ -224,6 +244,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1966,
                 'type' => MediaType::COMIC,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/8226154-M.jpg',
             ],
             [
                 'title' => 'Lucky Luke : Daisy Town',
@@ -233,6 +254,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 1972,
                 'type' => MediaType::COMIC,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/7942721-M.jpg',
             ],
             [
                 'title' => 'Persépolis',
@@ -241,6 +263,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 2000,
                 'type' => MediaType::COMIC,
                 'role' => ContributorRole::AUTHOR,
+                'cover' => 'https://covers.openlibrary.org/b/id/8231267-M.jpg',
             ],
 
             // DVDs (5)
@@ -251,6 +274,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 2010,
                 'type' => MediaType::DVD,
                 'role' => ContributorRole::DIRECTOR,
+                'cover' => 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&q=80',
             ],
             [
                 'title' => 'Interstellar',
@@ -259,6 +283,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 2014,
                 'type' => MediaType::DVD,
                 'role' => ContributorRole::DIRECTOR,
+                'cover' => 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=400&q=80',
             ],
             [
                 'title' => 'Le Voyage de Chihiro',
@@ -267,6 +292,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 2001,
                 'type' => MediaType::DVD,
                 'role' => ContributorRole::DIRECTOR,
+                'cover' => 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=400&q=80',
             ],
             [
                 'title' => 'Dune (Partie 1)',
@@ -275,6 +301,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 2021,
                 'type' => MediaType::DVD,
                 'role' => ContributorRole::DIRECTOR,
+                'cover' => 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=400&q=80',
             ],
             [
                 'title' => 'Le Fabuleux Destin d\'Amélie Poulain',
@@ -283,6 +310,7 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 'year' => 2001,
                 'type' => MediaType::DVD,
                 'role' => ContributorRole::DIRECTOR,
+                'cover' => 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=400&q=80',
             ],
         ];
 
@@ -316,6 +344,9 @@ class CatalogueFixtures extends Fixture implements DependentFixtureInterface
                 $now->modify(sprintf('-%d days', $faker->numberBetween(30, 300))),
                 $isbn
             );
+            if (isset($data['cover'])) {
+                $edition->setCoverUrl($data['cover']);
+            }
             $manager->persist($edition);
 
             $primaryContrib = new EditionContributor($edition, $author, $data['role'], 1);
