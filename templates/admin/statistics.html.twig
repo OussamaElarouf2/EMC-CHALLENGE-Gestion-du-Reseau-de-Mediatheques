@@ -1,0 +1,283 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistiques & Indicateurs — Médiathèque{% endblock %}
+
+{% block body %}
+<!-- Page Header -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 fw-bold mb-1 text-primary">
+            <i class="bi bi-graph-up-arrow me-2"></i>Statistiques & Indicateurs de Circulation
+        </h1>
+        <p class="text-muted mb-0">Mesure de l'activité, taux de rotation du fonds et analyse des usages.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ path('app_librarian_desk') }}" class="btn btn-outline-primary">
+            <i class="bi bi-hdd-rack me-1"></i>Guichet Circulation
+        </a>
+        <a href="{{ path('admin') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-speedometer2 me-1"></i>Back-Office
+        </a>
+    </div>
+</div>
+
+<!-- Key Performance Indicators (KPIs) -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 border-start border-primary border-4">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase fw-semibold">Taux de rotation global</div>
+                <div class="fs-3 fw-bold text-primary my-1">{{ turnover.globalTurnoverRate }}</div>
+                <small class="text-muted">emprunts par exemplaire en moyenne</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 border-start border-success border-4">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase fw-semibold">Fonds total du réseau</div>
+                <div class="fs-3 fw-bold text-success my-1">{{ turnover.totalCopies }}</div>
+                <small class="text-muted">exemplaires répartis sur 2 sites</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 border-start border-info border-4">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase fw-semibold">Volume total d'emprunts</div>
+                <div class="fs-3 fw-bold text-info my-1">{{ turnover.totalLoans }}</div>
+                <small class="text-muted">prêts réalisés depuis l'ouverture</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="card border-0 shadow-sm h-100 border-start border-warning border-4">
+            <div class="card-body">
+                <div class="text-muted small text-uppercase fw-semibold">Adhérents actifs</div>
+                <div class="fs-3 fw-bold text-warning my-1">{{ memberActivity.activeRate }}%</div>
+                <small class="text-muted">{{ memberActivity.activeBorrowersCount }} / {{ memberActivity.totalMembers }} adhérents avec prêt en cours</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Turnover Rates -->
+<div class="row g-4 mb-4">
+    <!-- Turnover by Media Type -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h2 class="h6 fw-bold mb-0 text-dark">
+                    <i class="bi bi-pie-chart me-2 text-primary"></i>Taux de rotation par support
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Support</th>
+                                <th class="text-center">Exemplaires</th>
+                                <th class="text-center">Emprunts</th>
+                                <th class="text-end">Taux de rotation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in turnover.byMediaType %}
+                                <tr>
+                                    <td>
+                                        {% if item.type.value == 'BOOK' %}
+                                            <i class="bi bi-book text-primary me-2"></i><strong>{{ item.label }}</strong>
+                                        {% elseif item.type.value == 'COMIC' %}
+                                            <i class="bi bi-brush text-success me-2"></i><strong>{{ item.label }}</strong>
+                                        {% elseif item.type.value == 'DVD' %}
+                                            <i class="bi bi-disc text-danger me-2"></i><strong>{{ item.label }}</strong>
+                                        {% else %}
+                                            <strong>{{ item.label }}</strong>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">{{ item.copies }}</td>
+                                    <td class="text-center">{{ item.loans }}</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-primary fs-6">{{ item.rate }}</span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Turnover by Branch -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h2 class="h6 fw-bold mb-0 text-dark">
+                    <i class="bi bi-building me-2 text-primary"></i>Taux de rotation par site médiathèque
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Site</th>
+                                <th class="text-center">Fonds local</th>
+                                <th class="text-center">Emprunts rattachés</th>
+                                <th class="text-end">Taux de rotation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in turnover.byBranch %}
+                                <tr>
+                                    <td>
+                                        <i class="bi bi-geo-alt text-primary me-2"></i>
+                                        <strong>{{ item.branch.name }}</strong>
+                                        <div class="small text-muted">{{ item.branch.address }}</div>
+                                    </td>
+                                    <td class="text-center">{{ item.copies }}</td>
+                                    <td class="text-center">{{ item.loans }}</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-success fs-6">{{ item.rate }}</span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rankings Section: Most Borrowed & Never Borrowed -->
+<div class="row g-4">
+    <!-- Most Borrowed -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h2 class="h6 fw-bold mb-0 text-dark">
+                    <i class="bi bi-trophy me-2 text-warning"></i>Top 10 : Les documents les plus empruntés
+                </h2>
+                <span class="badge bg-primary-subtle text-primary">Palmarès</span>
+            </div>
+            <div class="card-body p-0">
+                {% if mostBorrowed is empty %}
+                    <div class="p-4 text-center text-muted">Aucun emprunt enregistré à ce jour.</div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 50px;">#</th>
+                                    <th>Ouvrage & Auteur</th>
+                                    <th>Type</th>
+                                    <th class="text-end">Prêts</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in mostBorrowed %}
+                                    {% set ed = item.edition %}
+                                    <tr>
+                                        <td>
+                                            {% if loop.index == 1 %}
+                                                <span class="badge bg-warning text-dark">1</span>
+                                            {% elseif loop.index == 2 %}
+                                                <span class="badge bg-secondary">2</span>
+                                            {% elseif loop.index == 3 %}
+                                                <span class="badge bg-danger-subtle text-danger">3</span>
+                                            {% else %}
+                                                <span class="text-muted fw-bold">{{ loop.index }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ path('app_catalogue_show', {id: ed.id}) }}" class="fw-bold text-decoration-none text-dark">
+                                                {{ ed.title }}
+                                            </a>
+                                            <div class="small text-muted">
+                                                {% for ec in ed.contributors %}
+                                                    {{ ec.contributor.name }}{% if not loop.last %}, {% endif %}
+                                                {% else %}
+                                                    {{ ed.publisher }}
+                                                {% endfor %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border">{{ ed.mediaType.value }}</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <span class="fw-bold text-primary">{{ item.loanCount }}</span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Never Borrowed (Fonds Dormant) -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h2 class="h6 fw-bold mb-0 text-dark">
+                    <i class="bi bi-inbox me-2 text-danger"></i>Fonds dormant : Documents jamais empruntés
+                </h2>
+                <span class="badge bg-danger">{{ neverBorrowedCount }} document(s)</span>
+            </div>
+            <div class="card-body p-0">
+                {% if neverBorrowed is empty %}
+                    <div class="p-4 text-center text-success">
+                        <i class="bi bi-check2-circle fs-3 d-block mb-1"></i>
+                        Tous les documents du catalogue ont été empruntés au moins une fois !
+                    </div>
+                {% else %}
+                    <div class="p-3 bg-light border-bottom small text-muted">
+                        <i class="bi bi-info-circle me-1 text-primary"></i>
+                        Indicateur d'aide au désherbage ou à la mise en avant en tête de rayon.
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Ouvrage</th>
+                                    <th>Support</th>
+                                    <th>Éditeur / Année</th>
+                                    <th class="text-end">Fiche</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for ed in neverBorrowed %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ path('app_catalogue_show', {id: ed.id}) }}" class="fw-bold text-decoration-none text-dark">
+                                                {{ ed.title }}
+                                            </a>
+                                            {% if ed.isbn %}
+                                                <div class="small text-muted font-monospace">{{ ed.isbn }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border">{{ ed.mediaType.value }}</span>
+                                        </td>
+                                        <td class="small">{{ ed.publisher }} ({{ ed.publicationYear }})</td>
+                                        <td class="text-end">
+                                            <a href="{{ path('app_catalogue_show', {id: ed.id}) }}" class="btn btn-outline-secondary btn-sm" title="Voir la notice">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
