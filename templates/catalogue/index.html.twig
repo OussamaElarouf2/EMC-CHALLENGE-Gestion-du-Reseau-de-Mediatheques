@@ -1,0 +1,170 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catalogue — Réseau de Médiathèques{% endblock %}
+
+{% block body %}
+<!-- Search Header -->
+<div class="card shadow-sm border-0 mb-4 bg-white">
+    <div class="card-body p-4">
+        <h1 class="h3 fw-bold mb-3 text-primary">
+            <i class="bi bi-search me-2"></i>Catalogue du Réseau
+        </h1>
+        <p class="text-muted">Recherchez parmi les œuvres, éditions et supports de nos deux médiathèques.</p>
+
+        <form method="get" action="{{ path('app_catalogue') }}" class="row g-3">
+            <div class="col-md-7">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="q" value="{{ currentQuery }}" class="form-control" placeholder="Rechercher par titre, auteur, éditeur, ISBN...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select name="type" class="form-select">
+                    <option value="">Tous les supports</option>
+                    {% for media in mediaTypes %}
+                        <option value="{{ media.value }}" {{ currentType == media.value ? 'selected' : '' }}>
+                            {% if media.value == 'BOOK' %}Livre
+                            {% elseif media.value == 'COMIC' %}Bande Dessinée
+                            {% elseif media.value == 'DVD' %}DVD / Vidéo
+                            {% else %}{{ media.value }}{% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel me-1"></i> Filtrer
+                </button>
+                {% if currentQuery or currentType %}
+                    <a href="{{ path('app_catalogue') }}" class="btn btn-outline-secondary" title="Réinitialiser">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results Header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="text-muted small">
+        <strong>{{ total }}</strong> document(s) trouvé(s)
+        {% if currentQuery %} pour "<em>{{ currentQuery }}</em>"{% endif %}
+        {% if currentType %} (support : <strong>{{ currentType }}</strong>){% endif %}
+    </div>
+    {% if pages > 1 %}
+        <div class="text-muted small">Page {{ page }} sur {{ pages }}</div>
+    {% endif %}
+</div>
+
+<!-- Editions Grid -->
+{% if editions is empty %}
+    <div class="card border-0 shadow-sm text-center p-5">
+        <div class="display-6 text-muted mb-3"><i class="bi bi-inbox"></i></div>
+        <h4 class="h5 fw-bold text-dark">Aucun document ne correspond à votre recherche</h4>
+        <p class="text-muted small mb-3">Essayez d'élargir vos termes de recherche ou de retirer les filtres.</p>
+        <div>
+            <a href="{{ path('app_catalogue') }}" class="btn btn-outline-primary btn-sm">Réinitialiser la recherche</a>
+        </div>
+    </div>
+{% else %}
+    <div class="row g-4 mb-4">
+        {% for edition in editions %}
+            <div class="col-sm-6 col-lg-4 col-xl-3">
+                <div class="card h-100 border-0 shadow-sm catalogue-card">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            {% if edition.mediaType.value == 'BOOK' %}
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                    <i class="bi bi-book me-1"></i>Livre
+                                </span>
+                            {% elseif edition.mediaType.value == 'COMIC' %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                    <i class="bi bi-brush me-1"></i>Bande Dessinée
+                                </span>
+                            {% elseif edition.mediaType.value == 'DVD' %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                    <i class="bi bi-disc me-1"></i>DVD
+                                </span>
+                            {% endif %}
+
+                            {% if edition.isbn %}
+                                <small class="text-muted font-monospace" style="font-size: 0.75rem;">{{ edition.isbn }}</small>
+                            {% endif %}
+                        </div>
+
+                        <h2 class="card-title h6 fw-bold mb-1">
+                            <a href="{{ path('app_catalogue_show', {id: edition.id}) }}" class="text-decoration-none text-dark stretched-link">
+                                {{ edition.title }}
+                            </a>
+                        </h2>
+
+                        {% if edition.work and edition.work.originalTitle != edition.title %}
+                            <div class="text-muted small mb-2 fst-italic">
+                                Œuvre : {{ edition.work.originalTitle }}
+                            </div>
+                        {% endif %}
+
+                        <div class="small text-muted mb-2">
+                            {% if edition.contributors is not empty %}
+                                <i class="bi bi-person me-1"></i>
+                                {% for ec in edition.contributors %}
+                                    {{ ec.contributor.name }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-muted fst-italic">Auteur non renseigné</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="mt-auto pt-2 border-top small text-muted d-flex justify-content-between align-items-center">
+                            <span>{{ edition.publisher }} ({{ edition.publicationYear }})</span>
+                            <span class="text-primary fw-semibold"><i class="bi bi-chevron-right"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if pages > 1 %}
+        <nav aria-label="Pagination catalogue" class="d-flex justify-content-center">
+            <ul class="pagination">
+                {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ path('app_catalogue', {q: currentQuery, type: currentType, page: page - 1}) }}">
+                            &laquo; Précédent
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">&laquo; Précédent</span></li>
+                {% endif %}
+
+                {% for p in 1..pages %}
+                    {% if p == page %}
+                        <li class="page-item active"><span class="page-link">{{ p }}</span></li>
+                    {% elseif p == 1 or p == pages or (p >= page - 2 and p <= page + 2) %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ path('app_catalogue', {q: currentQuery, type: currentType, page: p}) }}">
+                                {{ p }}
+                            </a>
+                        </li>
+                    {% elseif p == page - 3 or p == page + 3 %}
+                        <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page < pages %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ path('app_catalogue', {q: currentQuery, type: currentType, page: page + 1}) }}">
+                            Suivant &raquo;
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Suivant &raquo;</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% endif %}
+{% endblock %}

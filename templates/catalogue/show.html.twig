@@ -1,0 +1,215 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ edition.title }} — Médiathèque{% endblock %}
+
+{% block body %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ path('app_catalogue') }}" class="text-decoration-none">Catalogue</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ edition.title }}</li>
+    </ol>
+</nav>
+
+<div class="row g-4">
+    <!-- Left column: Book information & availability -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        {% if edition.mediaType.value == 'BOOK' %}
+                            <span class="badge bg-primary me-2"><i class="bi bi-book me-1"></i>Livre</span>
+                        {% elseif edition.mediaType.value == 'COMIC' %}
+                            <span class="badge bg-success me-2"><i class="bi bi-brush me-1"></i>Bande Dessinée</span>
+                        {% elseif edition.mediaType.value == 'DVD' %}
+                            <span class="badge bg-danger me-2"><i class="bi bi-disc me-1"></i>DVD</span>
+                        {% endif %}
+
+                        {% if edition.completenessStatus.value == 'TO_COMPLETE' %}
+                            <span class="badge bg-warning text-dark me-2">Notice à compléter</span>
+                        {% endif %}
+                    </div>
+                    {% if edition.isbn %}
+                        <span class="text-muted font-monospace small">ISBN: {{ edition.isbn }}</span>
+                    {% endif %}
+                </div>
+
+                <h1 class="h3 fw-bold mb-2">{{ edition.title }}</h1>
+
+                {% if edition.work and edition.work.originalTitle != edition.title %}
+                    <p class="text-muted mb-3 fst-italic">Titre de l'œuvre originale : <strong>{{ edition.work.originalTitle }}</strong></p>
+                {% endif %}
+
+                <div class="table-responsive mt-4">
+                    <table class="table table-bordered table-striped align-middle mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="w-25 bg-light text-muted">Auteur(s) / Contributeur(s)</th>
+                                <td>
+                                    {% if edition.contributors is not empty %}
+                                        <ul class="list-unstyled mb-0">
+                                            {% for ec in edition.contributors %}
+                                                <li>
+                                                    <strong>{{ ec.contributor.name }}</strong>
+                                                    <span class="badge bg-secondary-subtle text-secondary ms-1">
+                                                        {% if ec.role.value == 'AUTHOR' %}Auteur
+                                                        {% elseif ec.role.value == 'ILLUSTRATOR' %}Illustrateur
+                                                        {% elseif ec.role.value == 'TRANSLATOR' %}Traducteur
+                                                        {% elseif ec.role.value == 'DIRECTOR' %}Réalisateur
+                                                        {% elseif ec.role.value == 'ACTOR' %}Acteur
+                                                        {% else %}{{ ec.role.value }}{% endif %}
+                                                    </span>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        <span class="text-muted fst-italic">Non renseigné</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-muted">Éditeur</th>
+                                <td>{{ edition.publisher }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-muted">Année de publication</th>
+                                <td>{{ edition.publicationYear }}</td>
+                            </tr>
+                            {% if edition.isbn %}
+                                <tr>
+                                    <th class="bg-light text-muted">Code ISBN / EAN</th>
+                                    <td class="font-monospace">{{ edition.isbn }}</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Branch Availability Section -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h2 class="h5 fw-bold mb-0 text-primary">
+                    <i class="bi bi-geo-alt me-2"></i>Disponibilité en temps réel dans le réseau
+                </h2>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    {% for item in availability %}
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 h-100 {{ item.available > 0 ? 'border-success-subtle bg-success-subtle' : 'border-secondary-subtle bg-light' }}">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h3 class="h6 fw-bold mb-0 text-dark">
+                                        <i class="bi bi-building me-1"></i>{{ item.branch.name }}
+                                    </h3>
+                                    {% if item.available > 0 %}
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle me-1"></i>{{ item.available }} disponible(s)
+                                        </span>
+                                    {% elseif item.total > 0 %}
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-hourglass-split me-1"></i>En circulation
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-dash-circle me-1"></i>Non possédé
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                <div class="text-muted small mb-2">{{ item.branch.address }}</div>
+                                <div class="small">
+                                    <strong>{{ item.total }}</strong> exemplaire(s) rattaché(s) à ce site.
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-4 pt-3 border-top">
+                    {% if waitingCount > 0 %}
+                        <div class="alert alert-warning d-flex align-items-center mb-0" role="alert">
+                            <i class="bi bi-clock-history me-2 flex-shrink-0 fs-5"></i>
+                            <div>
+                                <strong>File d'attente active :</strong> Il y a actuellement <strong>{{ waitingCount }}</strong> réservation(s) en attente pour cette édition. Les réservations sont servies dans l'ordre strict d'arrivée (FIFO).
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info d-flex align-items-center mb-0" role="alert">
+                            <i class="bi bi-info-circle me-2 flex-shrink-0 fs-5"></i>
+                            <div>
+                                <strong>Aucune file d'attente :</strong> Aucune réservation n'est en attente. Votre réservation sera satisfaite dès le prochain retour ou immédiatement si disponible.
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right column: Action / Reservation Card -->
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm sticky-top" style="top: 1rem;">
+            <div class="card-header bg-primary text-white py-3">
+                <h2 class="h5 fw-bold mb-0">
+                    <i class="bi bi-bookmark-plus me-2"></i>Réserver ce document
+                </h2>
+            </div>
+            <div class="card-body p-4">
+                {% if app.user %}
+                    {% if is_granted('ROLE_MEMBER') and member %}
+                        {% set isSubscriptionActive = member.subscriptionEndsAt > date() %}
+                        {% if isSubscriptionActive %}
+                            <form method="post" action="{{ path('app_catalogue_reserve', {id: edition.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('reserve_edition_' ~ edition.id) }}">
+
+                                <div class="mb-3">
+                                    <label for="pickupBranch" class="form-label fw-bold">Site de retrait souhaité</label>
+                                    <select name="pickupBranchId" id="pickupBranch" class="form-select">
+                                        {% for branch in branches %}
+                                            <option value="{{ branch.id }}" {{ member.homeBranch.id == branch.id ? 'selected' : '' }}>
+                                                {{ branch.name }}{{ member.homeBranch.id == branch.id ? ' (Votre site habituel)' : '' }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="form-text small">
+                                        <i class="bi bi-truck me-1"></i>Si l'exemplaire est situé sur un autre site, une navette de transfert inter-médiathèques sera automatiquement organisée.
+                                    </div>
+                                </div>
+
+                                <div class="d-grid mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-check2-circle me-1"></i> Confirmer la réservation
+                                    </button>
+                                </div>
+                            </form>
+                        {% else %}
+                            <div class="alert alert-warning mb-0">
+                                <h6 class="fw-bold"><i class="bi bi-exclamation-triangle me-1"></i>Abonnement expiré</h6>
+                                <p class="small mb-2">Votre abonnement a expiré le {{ member.subscriptionEndsAt|date('d/m/Y') }}. Le règlement de votre cotisation est requis pour pouvoir réserver un document.</p>
+                                <a href="{{ path('app_member_area') }}" class="btn btn-outline-warning btn-sm w-100">Voir mon compte</a>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            <p class="small mb-0">Vous êtes connecté en tant que gestionnaire. Pour tester la réservation adhérent, connectez-vous avec un compte adhérent.</p>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted small mb-3">
+                        La réservation est un service réservé aux adhérents du réseau. Connectez-vous pour choisir votre site de retrait.
+                    </p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ path('app_login') }}" class="btn btn-primary">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Se connecter pour réserver
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-light text-muted small p-3">
+                <i class="bi bi-clock me-1"></i>Durée de mise de côté : <strong>5 jours</strong> dès réception ou notification.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
