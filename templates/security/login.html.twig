@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion — Médiathèque{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <div class="display-6 text-primary mb-2">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <h1 class="h4 fw-bold">Authentification</h1>
+                    <p class="text-muted small">Connectez-vous pour accéder à vos services</p>
+                </div>
+
+                {% if error %}
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2 flex-shrink-0"></i>
+                        <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                    </div>
+                {% endif %}
+
+                <form method="post" action="{{ path('app_login') }}">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                    <div class="mb-3">
+                        <label for="inputEmail" class="form-label">Adresse email</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" value="{{ last_username }}" name="_username" id="inputEmail" class="form-control" autocomplete="email" required autofocus placeholder="ex: contact@mediatheque.local">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="inputPassword" class="form-label">Mot de passe</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-key"></i></span>
+                            <input type="password" name="_password" id="inputPassword" class="form-control" autocomplete="current-password" required placeholder="Votre mot de passe">
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button class="btn btn-primary btn-lg" type="submit">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Se connecter
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Evaluation / Demo Accounts Card -->
+        <div class="card border-0 shadow-sm bg-light">
+            <div class="card-body p-3">
+                <h6 class="card-subtitle mb-2 text-muted fw-bold">
+                    <i class="bi bi-info-circle me-1 text-primary"></i> Comptes de démonstration (Fixtures)
+                </h6>
+                <div class="table-responsive small">
+                    <table class="table table-sm table-borderless mb-0">
+                        <thead>
+                            <tr class="text-muted border-bottom">
+                                <th>Rôle</th>
+                                <th>Email</th>
+                                <th>Mot de passe</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge bg-danger">Admin</span></td>
+                                <td><code>admin@mediatheque.local</code></td>
+                                <td><code>Admin123!</code></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-primary">Bibliothécaire</span></td>
+                                <td><code>librarian@mediatheque.local</code></td>
+                                <td><code>Librarian123!</code></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-success">Adhérent actif</span></td>
+                                <td><code>member@mediatheque.local</code></td>
+                                <td><code>Member123!</code></td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-warning text-dark">Adhérent expiré</span></td>
+                                <td><code>expired.member@mediatheque.local</code></td>
+                                <td><code>Expired123!</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

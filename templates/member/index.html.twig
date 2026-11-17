@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace Adhérent — Médiathèque{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 fw-bold mb-1">
+                    <i class="bi bi-person-circle text-primary me-2"></i>Espace Adhérent
+                </h1>
+                <p class="text-muted mb-0">
+                    Bienvenue, {{ member ? (member.user.firstName ~ ' ' ~ member.user.lastName) : app.user.userIdentifier }}
+                </p>
+            </div>
+            <div>
+                {% if member and member.isSubscriptionActive %}
+                    <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i>Abonnement actif</span>
+                {% else %}
+                    <span class="badge bg-danger fs-6"><i class="bi bi-x-circle me-1"></i>Abonnement inactif / expiré</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if member %}
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Numéro de carte</div>
+                    <div class="fs-5 fw-bold text-dark font-monospace">{{ member.cardNumber }}</div>
+                    <small class="text-muted">Rattachement : {{ member.homeBranch.name }}</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Formule d'abonnement</div>
+                    <div class="fs-5 fw-bold text-primary">{{ member.plan.name }}</div>
+                    <small class="text-muted">Max {{ member.plan.maxSimultaneousLoans }} prêts simultanés</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Validité de la cotisation</div>
+                    <div class="fs-6 fw-bold {{ member.isSubscriptionActive ? 'text-success' : 'text-danger' }}">
+                        {{ member.subscriptionExpiresAt|date('d/m/Y') }}
+                    </div>
+                    <small class="text-muted">
+                        {% if member.isSubscriptionActive %}
+                            En règle
+                        {% else %}
+                            Renouvellement requis
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Solde des pénalités</div>
+                    {% set hasUnpaid = member.hasUnpaidPenalties %}
+                    <div class="fs-5 fw-bold {{ hasUnpaid ? 'text-danger' : 'text-success' }}">
+                        {{ hasUnpaid ? 'Pénalités en attente' : '0.00 DH' }}
+                    </div>
+                    <small class="text-muted">
+                        {{ hasUnpaid ? 'Règlement en médiathèque' : 'Aucun impayé' }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active loans & reservations placeholder (built in Step 11) -->
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white fw-bold py-3">
+                    <i class="bi bi-journal-bookmark me-2 text-primary"></i>Mes Emprunts en cours
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-0">Consultez et prolongez vos emprunts en cours. (Détail complet déployé à l'étape 11).</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white fw-bold py-3">
+                    <i class="bi bi-clock-history me-2 text-primary"></i>Mes Réservations en attente
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-0">Suivez le rang et la disponibilité de vos réservations. (Détail complet déployé à l'étape 11).</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>Votre compte utilisateur n'est pas encore associé à une fiche adhérent. Contactez votre bibliothécaire.
+    </div>
+{% endif %}
+{% endblock %}
