@@ -1,0 +1,12 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Enum;
+
+enum MediaType: string
+{
+    case BOOK = 'BOOK';
+    case COMIC = 'COMIC';
+    case DVD = 'DVD';
+}
