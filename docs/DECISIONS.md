@@ -239,3 +239,121 @@ Option 3 :
 - Élimination des effets de bord temporels dans les tests automatisés.
 - Couverture complète de toutes les règles métier du Niveau 2 validée à 100%.
 
+---
+
+## [2026-11-17] DEC-011 : Modèle de sécurité, hiérarchie de rôles et Voters d'autorisation métier (Niveau 3)
+
+### Contexte
+Le système s'adresse à trois profils distincts avec des privilèges et des responsabilités différenciés :
+1. **Adhérents (`ROLE_MEMBER`)** : consultation de l'état de leurs emprunts, prolongation de leurs propres prêts, annulation de leurs réservations actives, recherche catalogue.
+2. **Bibliothécaires (`ROLE_LIBRARIAN`)** : gestion des prêts/retours au guichet express, import unitaire ou par lot de notices bibliographiques, réception des transferts inter-sites.
+3. **Responsables de réseau / Administrateurs (`ROLE_ADMIN`)** : accès complet au back-office EasyAdmin, configuration des formules d'abonnement, consultation des tableaux de bord statistiques et de rotation de fonds.
+
+Il est impératif d'éviter que des contrôles d'autorisation complexes ne soient disséminés dans les gabarits Twig ou dupliqués dans les contrôleurs.
+
+### Options considérées
+1. **Contrôles simples basés sur les rôles (`is_granted('ROLE_MEMBER')`)** : Facile à configurer mais incapable de vérifier qu'un adhérent n'annule que *sa propre* réservation ou ne prolonge que *son propre* prêt.
+2. **Logique d'autorisation intégrée directement dans les contrôleurs** : Rend la logique difficilement testable unitairement et risque d'omettre des contrôles lors de l'ajout de nouvelles routes.
+3. **Hiérarchie de rôles Symfony + Voters de sécurité dédiés (`LoanVoter`, `ReservationVoter`)** :
+   - Hiérarchie explicite : `ROLE_ADMIN` hérite de `ROLE_LIBRARIAN`, qui hérite de `ROLE_MEMBER`.
+   - Voters Symfony encapsulant les règles d'habilitation contextuelles :
+     - `LoanVoter` : autorise l'attribut `EXTEND` si l'utilisateur est le titulaire du prêt (`loan.member.user === user`) ou possède `ROLE_LIBRARIAN`.
+     - `ReservationVoter` : autorise l'attribut `CANCEL` si l'utilisateur est le titulaire de la réservation (`reservation.member.user === user`) ou possède `ROLE_LIBRARIAN`.
+
+### Choix retenu
+Option 3 :
+- Hiérarchie déclarée dans `security.yaml` :
+  ```yaml
+  role_hierarchy:
+      ROLE_LIBRARIAN: ROLE_MEMBER
+      ROLE_ADMIN: [ROLE_LIBRARIAN]
+  ```
+- Mise en œuvre de `App\Security\Voter\LoanVoter` et `App\Security\Voter\ReservationVoter`.
+- Redirection post-authentification intelligente : les bibliothécaires et administrateurs sont dirigés vers le guichet express ou le tableau de bord, tandis que les adhérents sont dirigés vers leur espace personnel.
+
+### Conséquences
+- Sécurité hermétique : un usager authentifié ne peut en aucun cas interagir avec les prêts ou réservations d'un tiers.
+- Code propre, réutilisable dans Twig (`is_granted('EXTEND', loan)`) et dans les contrôleurs (`$this->denyAccessUnlessGranted('CANCEL', $reservation)`).
+- Couverture complète validée par des tests unitaires (`LoanVoterTest`, `ReservationVoterTest`) et fonctionnels (`SecurityAccessTest`).
+
+---
+
+## [2026-11-17] DEC-012 : Métriques de rotation des fonds et tableaux de bord statistiques (Niveau 3)
+
+### Contexte
+La gestion d'un réseau de médiathèques requiert des indicateurs d'aide à la décision pour évaluer l'attractivité des collections, identifier les fonds sous-utilisés et optimiser les acquisitions futures. Le sujet demande en particulier de mesurer le **taux de rotation** des documents, le classement des œuvres les plus empruntées et la liste des exemplaires jamais empruntés.
+
+### Options considérées
+1. **Calcul dynamique par itération sur les collections Doctrine (PHP)** : Charger l'ensemble des entités en mémoire et calculer les statistiques en PHP. (Inconvénient : effondrement des performances avec la croissance du catalogue).
+2. **Tables d'agrégation pré-calculées avec déclencheurs (triggers)** : Rapide à la lecture mais alourdit considérablement le modèle relationnel et la maintenance des migrations.
+3. **Requêtes d'agrégation DQL / SQL dédiées optimisées par indexation (`StatisticsService`)** :
+   - **Taux de rotation global et par site** : formule bibliothécaire standard $Taux = \frac{Nombre\ total\ d'emprunts}{Nombre\ d'exemplaires\ physiques}$.
+   - **Palmarès des éditions les plus empruntées** : requête avec `GROUP BY` et `COUNT(l.id) DESC` sur les prêts historiques.
+   - **Fonds dormant (exemplaires jamais empruntés)** : requête `LEFT JOIN loan` avec clause `WHERE l.id IS NULL`.
+
+### Choix retenu
+Option 3 :
+- Centralisation dans `App\Service\StatisticsService` injecté dans `App\Controller\StatisticsController`.
+- Utilisation de requêtes DQL optimisées tirant parti des index composites sur `loan(copy_id)` et `copy(current_branch_id)`.
+- Restitution sous forme de tableau de bord moderne Bootstrap avec cartes synthétiques (total emprunts, prêts actifs, taux de rotation par site et global) et tableaux détaillés.
+
+### Conséquences
+- Exécution instantanée des requêtes même sur un catalogue de plusieurs milliers d'exemplaires.
+- Indicateurs pertinents immédiatement exploitables par la direction du réseau.
+- Validation rigoureuse par tests d'intégration et fonctionnels (`StatisticsServiceTest`).
+
+---
+
+## [2026-11-17] DEC-013 : Intégration Open Library, respect des directives d'usage officielles et résilience (Niveau 4)
+
+### Contexte
+Le Niveau 4 requiert l'enrichissement du catalogue via l'API publique Open Library. La documentation officielle d'Open Library stipule des directives strictes :
+1. Les requêtes doivent identifier l'application avec un en-tête `User-Agent` comportant un contact pour bénéficier d'une limite de débit triplée (3 req/s au lieu de 1 req/s).
+2. Les requêtes ne doivent pas servir de backend massif sans mise en cache.
+3. Les données participatives d'Open Library peuvent comporter des lacunes (titres tronqués, éditeurs manquants, jaquettes absentes).
+
+### Options considérées
+1. **Requêtes anonymes synchrones sans régulation de flux** : Risque immédiat de blocage HTTP 429 (Too Many Requests) ou de bannissement IP par Internet Archive lors des imports par lot.
+2. **Client avec identification officielle, temporisation active et évaluation de complétude (Retenu)** :
+   - En-tête personnalisé `User-Agent: MediathequePFE/1.0 (pfe@educationmedia.ma)` conformément aux exigences d'Open Library.
+   - Régulation de flux automatique : temporisation de **0,35 seconde** (3 requêtes par seconde) dans la commande console par lot `app:import-isbn`.
+   - Découplage via l'interface `BookMetadataProviderInterface` et `OpenLibraryClient`.
+   - Évaluation heuristique de complétude : statut `CompletenessStatus::COMPLETE` si titre, auteur, éditeur et jaquette sont présents ; sinon `CompletenessStatus::TO_COMPLETE` (DEC-006) pour signalement au bibliothécaire.
+   - Priorité absolue au catalogue local : les ISBNs déjà existants sont comptabilisés comme `SKIPPED` et ne sont jamais écrasés.
+
+### Choix retenu
+Option 2 :
+- `Symfony\Contracts\HttpClient\HttpClientInterface` utilisé avec timeout de 5 secondes.
+- DTO immuable `BookMetadata` pour isoler le modèle de domaine des structures JSON externes (`/isbn/{isbn}.json` et `/works/{id}.json`).
+- Commande CLI robuste `ImportIsbnCommand` acceptant une liste d'ISBNs (séparés par retours à la ligne ou virgules), avec barre de progression console et tableau récapitulatif détaillé.
+- Interface Web dédiée réservée aux bibliothécaires (`/librarian/import`) pour la saisie unitaire avec prévisualisation immédiate de la couverture.
+
+### Conséquences
+- Conformité absolue avec les directives éthiques et techniques de la fondation Internet Archive.
+- Zéro dégradation des données existantes en base locale.
+- Testabilité totale sans dépendance réseau grâce au bouchonnage via `MockHttpClient` et `MockResponse`.
+
+---
+
+## [2026-11-17] DEC-014 : Déploiement conteneurisé clé en main en une commande (Niveau 5)
+
+### Contexte
+Le Niveau 5 évalue la reproductibilité et la facilité d'installation par le jury. L'énoncé demande une mise en route rapide, idéalement en une seule commande Docker, sans exiger de configuration manuelle préalable.
+
+### Options considérées
+1. **Guide pas à pas demandant à l'évaluateur d'exécuter manuellement 5 commandes dans les conteneurs** (`docker compose up`, puis `exec app migrations:migrate`, puis `exec app fixtures:load`). (Inconvénient : risque d'erreur humaine, expérience d'évaluation dégradée).
+2. **Script d'entrée Docker automatisé et idempotent (`docker-entrypoint.sh`)** :
+   - Attente active de la disponibilité physique du port MySQL 3306.
+   - Exécution automatique des migrations Doctrine (`doctrine:migrations:migrate --no-interaction`).
+   - Amorçage automatique des fixtures réalistes (`doctrine:fixtures:load --no-interaction`) avec comptes de test prêts à l'emploi.
+   - Lancement transparent du serveur PHP-FPM.
+
+### Choix retenu
+Option 2 :
+- Configuration d'un point d'entrée `docker/php/docker-entrypoint.sh` robuste.
+- Exposition claire des services sur les ports standards (8000 pour le Web, 3306 pour MySQL).
+- Guide d'installation exhaustif `INSTALL.md` documentant le lancement Docker en 1 ligne, les identifiants de démonstration, et les procédures alternatives en cas de besoin.
+
+### Conséquences
+- Expérience d'évaluation optimale : le jury clone le dépôt, saisit `docker compose up --build -d` et dispose immédiatement d'une application complète et fonctionnelle sur `http://localhost:8000`.
+
