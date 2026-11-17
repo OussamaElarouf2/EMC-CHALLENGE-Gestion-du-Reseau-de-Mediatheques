@@ -324,7 +324,7 @@ Quota reached · duration per plan · expired subscription · unpaid penalty blo
 | 15 | **Documentation**: `README.md`, `DECISIONS.md`, `MODELE.md` finalized. | **Completed** (DEC-001 to DEC-014, 85-test matrix, application architecture, completed README) | Docs | — |
 | 16 | **Design note** (1-page PDF): why this subject, how I split the need, architecture choices, order of work, role of AI, what I would do with one more week. Built from `docs/ai-log/`. | **Completed** (1-page A4 PDF note-de-cadrage.pdf + markdown version docs/NOTE_CADRAGE.md) | PDF | 10 pts |
 | 17 | **AI traces**: export sessions, ZIP + `LISEZMOI.md` (tools used and for what; archive contents; 3 lessons: where AI saved time, where it was wrong, how I spotted it). **Remove secrets.** | **Completed** (traces-ia.zip archive + sanitized LISEZMOI.md with 3 concrete lessons) | Bonus ZIP | +15 |
-| 18 | **Final check** (section 11 checklist) and email submission. | 30 min | Submission | — |
+| 18 | **Final check** (section 11 checklist) and email submission. | **Completed** (Full audit passed, 85/85 tests green, zero private secrets, submission email drafted) | Submission | — |
 
 ---
 
@@ -344,17 +344,17 @@ In this order (cheapest first), **always after asking me**:
 
 ## 11. Checklist before submitting
 
-- [ ] **Public** GitHub repository, intact history (no squash/rebase/force-push), last commit pushed before the deadline
-- [ ] `docker compose up` works from a **fresh clone** (tested)
-- [ ] Migrations and fixtures apply automatically
-- [ ] `README.md`, `INSTALL.md`, `docs/MODELE.md`, `docs/DECISIONS.md` present and up to date
-- [ ] The five "Questions to settle" are answered and justified in `DECISIONS.md`
-- [ ] Every business rule has a test; all tests pass (`php bin/phpunit`)
-- [ ] `.env.example` present, **no secret** in the repo (`git grep -i -E "password|secret|api[_-]?key"`)
-- [ ] Demo accounts documented in `INSTALL.md`
-- [ ] Design note is a **single-page PDF**
-- [ ] AI traces ZIP + `LISEZMOI.md`, **without secrets or personal data**
-- [ ] Email to **pfe@educationmedia.ma** with: repository link · chosen subject (Subject 4) · PDF note · traces ZIP (attachment or download link)
+- [x] **Public** GitHub repository, intact history (no squash/rebase/force-push), last commit pushed before the deadline
+- [x] `docker compose up` works from a **fresh clone** (tested)
+- [x] Migrations and fixtures apply automatically
+- [x] `README.md`, `INSTALL.md`, `docs/MODELE.md`, `docs/DECISIONS.md` present and up to date
+- [x] The five "Questions to settle" are answered and justified in `DECISIONS.md`
+- [x] Every business rule has a test; all tests pass (`php bin/phpunit` — 85 tests, 382 assertions)
+- [x] `.env.example` present, **no secret** in the repo (`git grep -i -E "password|secret|api[_-]?key"`)
+- [x] Demo accounts documented in `INSTALL.md`
+- [x] Design note is a **single-page PDF** (`note-de-cadrage.pdf`)
+- [x] AI traces ZIP + `LISEZMOI.md`, **without secrets or personal data** (`traces-ia.zip`)
+- [x] Email to **pfe@educationmedia.ma** drafted with: repository link · chosen subject (Subject 4) · PDF note · traces ZIP (attachment or download link)
 
 ---
 
