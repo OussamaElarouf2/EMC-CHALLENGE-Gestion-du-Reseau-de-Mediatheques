@@ -318,7 +318,7 @@ Quota reached · duration per plan · expired subscription · unpaid penalty blo
 | 9 | **Security**: login, 3 roles, hierarchy, `access_control`, Voters, CSRF, demo accounts. Functional access tests. | **Completed** (49 tests passing, security voters + functional auth tests) | Auth + roles | 3 |
 | 10 | **Public catalogue**: paginated list, search (title, author, ISBN), edition page with availability per branch, reserve button. | **Completed** (56 tests passing, full search, branch availability, reservation flow) | Catalogue | 3 |
 | 11 | **Member area** (current loans, reservations, history, extension) and **librarian screen** (loan, return, reservation handling). | **Completed** (66 tests passing, member actions, librarian desk with borrow/return) | Member + librarian areas | 3 |
-| 12 | **Statistics**: turnover rate, most borrowed, never borrowed (repository / `StatisticsService` queries). | 1 h | Dashboard | 3 |
+| 12 | **Statistics**: turnover rate, most borrowed, never borrowed (repository / `StatisticsService` queries). | **Completed** (71 tests passing, full turnover, rankings, never borrowed) | Dashboard | 3 |
 | 13 | **Open Library** (section 8): client, ISBN form, batch command, report, tests with mocks. | 1 h 30 | External API | 4 |
 | 14 | **Docker finalization**, entrypoint (migrations + fixtures), `INSTALL.md`, **test on a fresh clone of the repo**. | 1 h | Delivery | 5 |
 | 15 | **Documentation**: `README.md`, `DECISIONS.md`, `MODELE.md` finalized. | 1 h | Docs | — |
