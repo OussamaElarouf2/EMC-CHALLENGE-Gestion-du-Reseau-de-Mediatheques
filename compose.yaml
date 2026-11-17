@@ -5,7 +5,7 @@ services:
       dockerfile: docker/php/Dockerfile
     restart: unless-stopped
     environment:
-      APP_ENV: prod
+      APP_ENV: dev
       APP_SECRET: 9f64bfcb7c2ee1097fa32e22c7a7d4be
       DATABASE_URL: mysql://app_user:app_password@db:3306/mediatheque?serverVersion=8.0&charset=utf8mb4
     volumes:

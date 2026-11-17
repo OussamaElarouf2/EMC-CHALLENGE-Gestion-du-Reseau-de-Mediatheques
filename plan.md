@@ -30,10 +30,10 @@ If something is ambiguous, **ask, do not guess.** If you notice a mistake in one
 - Put a secret, a real password or an API key in a versioned file.
 
 ### Environment policy: Local development vs Docker delivery
-- **Daily development**: runs **locally** on Windows with PHP 8.2 and Composer in the PATH. The candidate installs/verifies them personally; the agent never installs host software.
+- **Daily development**: runs **locally** on Windows with PHP 8.3 (>= 8.3.36) and Composer in the PATH. The candidate installs/verifies them personally; the agent never installs host software.
 - **Docker**: the **delivery** environment (Level 5) and the benchmark for "works on a clean machine". The candidate tests `docker compose up --build` after each major milestone and from a fresh clone before final submission.
 - **Local services**: only MySQL 8 runs in Docker for local development. A dev-only `compose.override.yaml` exposes MySQL on 127.0.0.1; the delivered `compose.yaml` must not expose the database port needlessly.
-- **Reproducibility**: `composer.json` pins `"config": {"platform": {"php": "8.2.0"}}` so `composer.lock` is strictly bound to PHP 8.2. The Docker image installs the exact same PHP extensions as the local setup (`intl`, `pdo_mysql`, `mbstring`, `xml`, `ctype`, `iconv`, `zip`). List documented in `INSTALL.md`.
+- **Reproducibility**: `composer.json` pins `"config": {"platform": {"php": "8.3.0"}}` so `composer.lock` is strictly bound to PHP 8.3. The Docker image installs the exact same PHP extensions as the local setup (`intl`, `pdo_mysql`, `mbstring`, `xml`, `ctype`, `iconv`, `zip`). List documented in `INSTALL.md`.
 
 ---
 
@@ -44,7 +44,7 @@ If something is ambiguous, **ask, do not guess.** If you notice a mistake in one
 Pre-selection for a PFE (end-of-studies internship) at **Education Media Company** (Technopark Souss Massa, Agadir). Successful candidates are offered a PFE with a prospect of being hired afterwards.
 
 - **Chosen subject: Subject 4 — Library network management.**
-- **Imposed stack**: Symfony 7.4, PHP 8.2+, MySQL 8, Doctrine ORM and migrations. Free choice for the front end.
+- **Imposed stack**: Symfony 7.4, PHP 8.3+, MySQL 8, Doctrine ORM and migrations. Free choice for the front end.
 - **Individual work, AI allowed** (and encouraged: my AI usage traces earn up to +15 bonus points).
 - **Real time budget: 2 days.** Every level must be a **minimal but clean** version. The brief itself says that three solid levels beat five sloppy ones. The goal is all 5 levels, but **quality comes before quantity**.
 
@@ -174,7 +174,7 @@ Documentation is part of the grade and must never be postponed to the end. After
 - **No double loan**: pessimistic lock (`LockMode::PESSIMISTIC_WRITE`) on the copy while borrowing, or optimistic locking (`#[ORM\Version]`) with proper exception handling. I validate the choice at the relevant step.
 - **Money**: never `float`. Use `DECIMAL` / strings (or integer cents).
 - **Dates**: `DateTimeImmutable`, stored in UTC, displayed in `Africa/Casablanca`.
-- **Platform pinning**: `composer.json` pins `"config": {"platform": {"php": "8.2.0"}}` to guarantee that `composer.lock` is strictly reproducible and compatible with PHP 8.2 across machines.
+- **Platform pinning**: `composer.json` pins `"config": {"platform": {"php": "8.3.0"}}` to guarantee that `composer.lock` is strictly reproducible and compatible with PHP 8.3 across machines.
 - **Identical extensions**: the Docker delivery image must install the exact same PHP extensions as the local setup (`intl`, `pdo_mysql`, `mbstring`, `xml`, `ctype`, `iconv`, `zip`). Documented in `INSTALL.md`.
 - **Database isolation**: MySQL 8 runs in Docker for local development (exposed on 127.0.0.1:3306 via dev-only `compose.override.yaml`), ensuring identical database behavior between dev and production delivery.
 
@@ -201,8 +201,8 @@ Documentation is part of the grade and must never be postponed to the end. After
 
 | Need | Choice | Note |
 |---|---|---|
-| Framework | Symfony 7.4, PHP 8.2+ | Imposed; platform pinned to `8.2.0` in `composer.json` |
-| Local Dev | PHP 8.2 + Composer on Windows | Daily dev runs locally with PHP extensions: intl, zip, pdo_mysql, mbstring, xml, ctype, iconv |
+| Framework | Symfony 7.4, PHP 8.3+ | Imposed; platform pinned to `8.3.0` in `composer.json` |
+| Local Dev | PHP 8.3 (>= 8.3.36) + Composer on Windows | Daily dev runs locally with PHP extensions: intl, zip, pdo_mysql, mbstring, xml, ctype, iconv |
 | ORM / DB | Doctrine ORM + Migrations, MySQL 8 | Imposed; **never** `schema:update --force`, migrations only. MySQL runs in Docker (127.0.0.1:3306 via `compose.override.yaml` for dev) |
 | Back-office | **EasyAdmin** | Fast CRUD for level 1 |
 | Demo data | **DoctrineFixturesBundle + Faker** | ~300 copies, reproducible (fixed seed) |
@@ -403,6 +403,7 @@ Read `docs/Project statement/` and this `plan.md` in full, then **do nothing els
 - [x] 3 `MODELE.md` validated + initial `DECISIONS.md`
 - [x] 4 Entities + migrations
 - [x] 5 Fixtures + Faker
+- [x] 5b PHP security upgrade (PHP2Shell CVE-2026-109618 / CVE-2026-109619, PHP 8.3.36, upload_progress disabled, platform pinned)
 - [ ] 6 EasyAdmin
 - [ ] 7.1 Common groundwork (clock, exceptions, test DB)
 - [ ] 7.2 `LoanService::borrow()` + tests
