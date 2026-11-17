@@ -88,9 +88,19 @@ class Edition
         $this->mediaType = $mediaType;
         $this->completenessStatus = $completenessStatus;
         $this->createdAt = $createdAt;
-        $this->isbn = $isbn;
+        $this->isbn = self::normalizeIsbn($isbn);
         $this->coverUrl = $coverUrl;
         $this->contributors = new ArrayCollection();
+    }
+
+    public static function normalizeIsbn(?string $isbn): ?string
+    {
+        if ($isbn === null) {
+            return null;
+        }
+
+        $normalized = str_replace(['-', ' '], '', trim($isbn));
+        return $normalized === '' ? null : $normalized;
     }
 
     public function getId(): ?int
@@ -116,7 +126,7 @@ class Edition
 
     public function setIsbn(?string $isbn): self
     {
-        $this->isbn = $isbn;
+        $this->isbn = self::normalizeIsbn($isbn);
         return $this;
     }
 
