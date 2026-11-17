@@ -394,14 +394,14 @@ Read `docs/Project statement/` and this `plan.md` in full, then **do nothing els
 
 ## 15. Progress tracker (update after every validated step)
 
-**Last update:** 2026-11-17 09:15 · **Current step:** Step 3 complete (ready for Step 4)
+**Last update:** 2026-11-17 12:15 · **Current step:** Step 4 complete (ready for Step 5)
 
 ### Day 1
 - [x] 0 Scoping, GitHub repo, briefs copied to `docs/Project statement/`
 - [x] 1 Symfony 7.4 skeleton + first push
 - [x] 2 Docker (stack boots)
 - [x] 3 `MODELE.md` validated + initial `DECISIONS.md`
-- [ ] 4 Entities + migrations
+- [x] 4 Entities + migrations
 - [ ] 5 Fixtures + Faker
 - [ ] 6 EasyAdmin
 - [ ] 7.1 Common groundwork (clock, exceptions, test DB)
