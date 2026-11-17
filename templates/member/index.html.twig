@@ -11,11 +11,11 @@
                     <i class="bi bi-person-circle text-primary me-2"></i>Espace Adhérent
                 </h1>
                 <p class="text-muted mb-0">
-                    Bienvenue, {{ member ? (member.user.firstName ~ ' ' ~ member.user.lastName) : app.user.userIdentifier }}
+                    Bienvenue, {{ app.user.userIdentifier }}
                 </p>
             </div>
             <div>
-                {% if member and member.isSubscriptionActive %}
+                {% if member and member.subscriptionEndsAt > date() %}
                     <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i>Abonnement actif</span>
                 {% else %}
                     <span class="badge bg-danger fs-6"><i class="bi bi-x-circle me-1"></i>Abonnement inactif / expiré</span>
@@ -31,7 +31,7 @@
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="text-muted small">Numéro de carte</div>
-                    <div class="fs-5 fw-bold text-dark font-monospace">{{ member.cardNumber }}</div>
+                    <div class="fs-5 fw-bold text-dark font-monospace">{{ member.membershipNumber }}</div>
                     <small class="text-muted">Rattachement : {{ member.homeBranch.name }}</small>
                 </div>
             </div>
@@ -49,11 +49,11 @@
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="text-muted small">Validité de la cotisation</div>
-                    <div class="fs-6 fw-bold {{ member.isSubscriptionActive ? 'text-success' : 'text-danger' }}">
-                        {{ member.subscriptionExpiresAt|date('d/m/Y') }}
+                    <div class="fs-6 fw-bold {{ member.subscriptionEndsAt > date() ? 'text-success' : 'text-danger' }}">
+                        {{ member.subscriptionEndsAt|date('d/m/Y') }}
                     </div>
                     <small class="text-muted">
-                        {% if member.isSubscriptionActive %}
+                        {% if member.subscriptionEndsAt > date() %}
                             En règle
                         {% else %}
                             Renouvellement requis
@@ -65,13 +65,12 @@
         <div class="col-md-3">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <div class="text-muted small">Solde des pénalités</div>
-                    {% set hasUnpaid = member.hasUnpaidPenalties %}
-                    <div class="fs-5 fw-bold {{ hasUnpaid ? 'text-danger' : 'text-success' }}">
-                        {{ hasUnpaid ? 'Pénalités en attente' : '0.00 DH' }}
+                    <div class="text-muted small">Durée d'emprunt autorisée</div>
+                    <div class="fs-5 fw-bold text-dark">
+                        {{ member.plan.loanDurationDays }} jours
                     </div>
                     <small class="text-muted">
-                        {{ hasUnpaid ? 'Règlement en médiathèque' : 'Aucun impayé' }}
+                        Prolongations : {{ member.plan.maxExtensions }} max
                     </small>
                 </div>
             </div>
