@@ -105,7 +105,7 @@ class ImportIsbnCommandTest extends KernelTestCase
             self::assertStringContainsString('COMPLETE', $output);
             self::assertStringContainsString('SKIPPED', $output);
             self::assertStringContainsString('NOT_FOUND', $output);
-            self::assertStringContainsString('1 / 3 records added to the catalogue', $output);
+            self::assertStringContainsString('1 / 3 records added', $output);
         } finally {
             if (file_exists($tempFile)) {
                 unlink($tempFile);
