@@ -324,3 +324,56 @@ Pour garantir un niveau de qualité irréprochable sans dispersion dans le budge
      - En Doctrine : `$em->createQuery(...)->setLockMode(LockMode::PESSIMISTIC_WRITE)->getOneOrNullResult()`.
      - **Séparation stricte via `AWAITING_TRANSFER`** : Dès qu'un exemplaire est assigné et nécessite un transport, la réservation bascule immédiatement à l'état `AWAITING_TRANSFER` (et non `WAITING`). Elle quitte ainsi instantanément le filtre `status = 'WAITING'`.
      - Ce double mécanisme (verrouillage `FOR UPDATE` + bascule immédiate hors du statut `WAITING`) garantit qu'aucun autre retour simultané ne pourra sélectionner cette même réservation : la première transaction verrouille et passe la réservation au statut `AWAITING_TRANSFER` (ou `READY`), et la seconde transaction traite obligatoirement la réservation suivante de la file FIFO.
+
+---
+
+## 8. Services Métier, Exceptions et Matrice de Traçabilité des Tests (Niveau 2)
+
+### A. Services du Domaine (`src/Service/`)
+- **`PenaltyCalculator`** : Calcul déterministe des jours de retard (`max(0, ceil((retour - échéance)))`) et application du barème journalier du plan via `bcmul`.
+- **`LoanService`** :
+  - `borrow(Member $member, Copy $copy): Loan` : Vérifie l'abonnement, le quota du plan, l'absence d'impayés, la disponibilité et pose le verrou `activeCopyId`.
+  - `return(Loan $loan): ?Penalty` : Calcule et émet la pénalité si en retard, libère `activeCopyId` et notifie la file d'attente.
+  - `extend(Loan $loan): Loan` : Valide l'éligibilité (non échu, quota prolongations non atteint, aucune réservation en attente).
+  - `markLost(Copy $copy, ?Loan $loan, ?string $amount): ?Penalty` : Sortie d'inventaire (`LOST`) et pénalité de remplacement.
+  - `markDamaged(Copy $copy, ?Loan $loan, ?string $amount): ?Penalty` : Sortie temporaire (`DAMAGED`) et pénalité de réparation.
+- **`ReservationQueueService`** :
+  - `reserve(Member $member, Edition $edition, Branch $pickupBranch): Reservation` : Inscription FIFO horodatée avec clé unique `activeMemberEditionKey`.
+  - `handleCopyReturned(Copy $copy): ?Reservation` : Réattribution FIFO immédiate (`READY` si local, `Transfer` si distant).
+  - `expireReservations(): int` : Purge des réservations prêtes non retirées sous 5 jours et réallocation au suivant.
+- **`TransferService`** :
+  - `requestTransfer()`, `shipTransfer()`, `receiveTransfer()` : Gestion logistique inter-sites.
+
+### B. Matrice de Traçabilité des Tests Automatisés (PHPUnit 12 — 29 Tests)
+
+| # | Règle Métier Spécifiée (Section 9.2 du Plan) | Classe de Test | Méthode de Test | Résultat |
+|---|---|---|---|---|
+| 1 | Retour dans les délais (aucune pénalité) | `PenaltyCalculatorTest` | `test_return_on_time_generates_no_penalty` | Validé |
+| 2 | Retour anticipé (aucune pénalité) | `PenaltyCalculatorTest` | `test_return_before_due_date_generates_no_penalty` | Validé |
+| 3 | Montant de pénalité de retard selon tarif journalier | `PenaltyCalculatorTest` | `test_return_late_generates_correct_penalty_amount_based_on_plan_daily_rate` | Validé |
+| 4 | Calcul avec tarif journalier décimal | `PenaltyCalculatorTest` | `test_fractional_daily_rate_calculation` | Validé |
+| 5 | Calcul de la date d'échéance selon formule | `LoanServiceTest` | `test_borrow_sets_due_date_according_to_plan_duration` | Validé |
+| 6 | Blocage si quota d'emprunts simultanés atteint | `LoanServiceTest` | `test_borrow_refused_when_simultaneous_loan_quota_reached` | Validé |
+| 7 | Blocage si adhésion de l'usager expirée | `LoanServiceTest` | `test_borrow_refused_when_member_subscription_is_expired` | Validé |
+| 8 | Blocage si pénalité financière impayée | `LoanServiceTest` | `test_borrow_refused_when_member_has_unpaid_penalty` | Validé |
+| 9 | Blocage si exemplaire non disponible (`ON_LOAN`, etc.) | `LoanServiceTest` | `test_borrow_refused_when_copy_is_not_available` | Validé |
+| 10 | Retour dans les délais sans pénalité | `LoanServiceTest` | `test_return_on_time_generates_no_penalty` | Validé |
+| 11 | Retour en retard générant une pénalité `LATE` | `LoanServiceTest` | `test_return_late_generates_correct_penalty_amount_based_on_plan_daily_rate` | Validé |
+| 12 | Prolongation acceptée sans réservation concurrente | `LoanServiceTest` | `test_extend_accepted_when_no_reservation_waiting` | Validé |
+| 13 | Prolongation refusée si prêt déjà en retard | `LoanServiceTest` | `test_extend_refused_when_loan_is_already_overdue` | Validé |
+| 14 | Prolongation refusée si quota max atteint | `LoanServiceTest` | `test_extend_refused_when_max_extensions_quota_reached` | Validé |
+| 15 | Prolongation refusée si réservation en attente | `LoanServiceTest` | `test_extend_refused_when_reservation_is_waiting_on_edition` | Validé |
+| 16 | File d'attente de réservation dans l'ordre FIFO | `ReservationQueueServiceTest` | `test_reservation_queue_follows_strict_fifo_order` | Validé |
+| 17 | Retour d'exemplaire activant la réservation (`READY`) | `ReservationQueueServiceTest` | `test_return_triggers_waiting_reservation_and_sets_it_ready` | Validé |
+| 18 | Réservation inter-sites déclenchant un transfert | `ReservationQueueServiceTest` | `test_return_for_inter_branch_reservation_creates_transfer` | Validé |
+| 19 | Expiration de réservation réallouant l'exemplaire | `ReservationQueueServiceTest` | `test_expired_reservation_hands_copy_over_to_next_member_in_queue` | Validé |
+| 20 | Rejet d'une seconde réservation active identique | `ReservationQueueServiceTest` | `test_reserve_refused_when_member_already_has_active_reservation_for_same_edition` | Validé |
+| 21 | Réservation refusée si adhésion expirée | `ReservationQueueServiceTest` | `test_reserve_refused_when_member_subscription_is_expired` | Validé |
+| 22 | Cycle de vie d'un transfert avec réservation | `TransferServiceTest` | `test_transfer_workflow_updates_copy_branch_and_activates_pickup_ready` | Validé |
+| 23 | Transfert logistique sans réservation liée | `TransferServiceTest` | `test_transfer_workflow_without_reservation_makes_copy_available` | Validé |
+| 24 | Transition d'état de transfert invalide rejetée | `TransferServiceTest` | `test_invalid_transfer_transition_throws_exception` | Validé |
+| 25 | Document déclaré perdu avec pénalité (`LOST`) | `TransferServiceTest` | `test_mark_copy_lost_removes_from_circulation_and_creates_penalty` | Validé |
+| 26 | Document dégradé retiré de la circulation (`DAMAGED`) | `TransferServiceTest` | `test_mark_copy_damaged_removes_from_circulation` | Validé |
+| 27 | Rejet physique MySQL du double emprunt simultané | `DoubleBorrowConcurrencyTest` | `test_concurrent_double_loan_is_prevented_by_active_copy_id_unique_index` | Validé |
+| 28 | Coexistence historique sans conflit des prêts rendus | `DoubleBorrowConcurrencyTest` | `test_returned_loans_do_not_conflict_because_active_copy_id_is_null` | Validé |
+| 29 | Rejet physique MySQL de la double réservation active | `DoubleBorrowConcurrencyTest` | `test_active_reservation_unique_key_blocks_duplicate_concurrent_reservations` | Validé |

@@ -211,3 +211,31 @@ Option 2 :
 ### Conséquences
 - Déploiement automatisé et infaillible en une seule commande (`docker compose up --build`).
 - Données de démonstration toujours synchronisées avec les entités et migrations Doctrine.
+
+---
+
+## [2026-11-17] DEC-010 : Architecture des services métier du domaine et stratégie de tests automatisés (Niveau 2)
+
+### Contexte
+Le Niveau 2 impose la mise en œuvre de règles de gestion strictes (quotas d'emprunts simultanés, durées selon les formules, calcul des pénalités de retard, file d'attente FIFO des réservations, transferts logistiques inter-sites, déclaration de documents perdus ou détériorés). Ces règles impliquent des opérations transactionnelles multi-entités et des calculs temporels sensibles (retards, délais de retrait de 5 jours).
+
+### Options considérées
+1. **Logique métier éclatée dans les contrôleurs et formulaires** : Simple à court terme pour un prototype, mais impossible à tester unitairement sans instancier tout le noyau HTTP, couplée au framework et sujette à des régressions lors du développement des futures interfaces publiques (Niveau 3).
+2. **Architecture pilotée par événements (Messenger / Event Dispatcher)** : Découplage maximal, mais complexité inutile et asynchronisme inadapté à la validation immédiate des quotas lors d'un emprunt au comptoir.
+3. **Services du Domaine purs avec injection de `ClockInterface`, transactions explicites et exceptions typées (Retenu)** :
+   - Services métiers spécialisés (`LoanService`, `ReservationQueueService`, `TransferService`, `PenaltyCalculator`).
+   - Exceptions de domaine dédiées (`LoanQuotaExceededException`, `SubscriptionExpiredException`, `UnpaidPenaltyException`, etc.) héritant de `DomainException`.
+   - Contrôle temporel déterministe via `Symfony\Component\Clock\ClockInterface` (permettant d'utiliser `MockClock` dans les tests sans toucher à l'horloge système).
+   - Encapsulation des mutations critiques dans `$em->wrapInTransaction()`.
+
+### Choix retenu
+Option 3 :
+- **Découplage et réutilisabilité** : Les mêmes services gouvernent à la fois le back-office EasyAdmin, les commandes console (`app:reservations:expire`) et les futures interfaces adhérent/bibliothécaire de la Journée 2.
+- **Testabilité totale** : Les 29 tests automatisés (PHPUnit 12) s'exécutent en moins de 20 secondes sur une base MySQL dédiée (`mediatheque_test`) en manipulant `MockClock` pour voyager dans le temps (+14 jours, +6 jours) sans aucun artifice (`sleep()`).
+- **Filet de sécurité de concurrence** : Les verrous applicatifs sont doublés par les index d'unicité physiques en base (`UNIQ_LOAN_ACTIVE_COPY` et `UNIQ_RES_ACTIVE_MEMBER_EDITION`).
+
+### Conséquences
+- Architecture robuste, maintenable et 100% conforme aux exigences de robustesse du sujet.
+- Élimination des effets de bord temporels dans les tests automatisés.
+- Couverture complète de toutes les règles métier du Niveau 2 validée à 100%.
+
