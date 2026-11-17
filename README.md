@@ -57,7 +57,7 @@ Consultez le guide détaillé : [INSTALL.md](INSTALL.md).
 |---|---|---|---|
 | **Niveau 1** | Modèle de données (13 entités), migrations, fixtures réalistes, back-office | **Validé** (13 entités, fixtures, EasyAdmin) | 15 / 15 pts |
 | **Niveau 2** | Règles métier avancées (quotas, files FIFO, transferts, retards) + Tests automatisés | **Validé** (29 tests unitaires, intégration et concurrence) | 15 / 15 pts |
-| **Niveau 3** | Espace adhérent, authentification, catalogue public, statistiques | **En cours** (Étapes 9 & 10 validées : Auth 3 rôles, Voters, Catalogue public, disponibilités temps réel par site, 56 tests) | 10 pts |
+| **Niveau 3** | Espace adhérent, authentification, catalogue public, statistiques | **En cours** (Étapes 9, 10 & 11 validées : Auth 3 rôles, Catalogue, Espace adhérent, Guichet circulation, 66 tests) | 10 pts |
 | **Niveau 4** | Import enrichi Open Library (unitaire et par lot) | Prévu (Étape 13) | 7 pts |
 | **Niveau 5** | Environnement Docker clé en main, `INSTALL.md`, reproductibilité | En cours (Socle Docker actif) | 8 pts |
 
