@@ -53,6 +53,44 @@ class ReservationRepository extends ServiceEntityRepository
     }
 
     /**
+     * Finds active reservations (WAITING or READY) for a member.
+     *
+     * @return list<Reservation>
+     */
+    public function findActiveByMember(Member $member): array
+    {
+        return $this->createQueryBuilder('r')
+            ->join('r.edition', 'e')
+            ->join('r.pickupBranch', 'b')
+            ->leftJoin('r.assignedCopy', 'c')
+            ->addSelect('e', 'b', 'c')
+            ->where('r.member = :member')
+            ->andWhere('r.status IN (:activeStatuses)')
+            ->setParameter('member', $member)
+            ->setParameter('activeStatuses', [ReservationStatus::WAITING, ReservationStatus::READY])
+            ->orderBy('r.createdAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Computes the 1-based FIFO rank of a waiting reservation.
+     */
+    public function getQueueRank(Reservation $reservation): int
+    {
+        return (int) $this->createQueryBuilder('r')
+            ->select('COUNT(r.id)')
+            ->where('r.edition = :edition')
+            ->andWhere('r.status = :status')
+            ->andWhere('r.createdAt <= :createdAt')
+            ->setParameter('edition', $reservation->getEdition())
+            ->setParameter('status', ReservationStatus::WAITING)
+            ->setParameter('createdAt', $reservation->getCreatedAt())
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
      * Finds an active reservation (WAITING or READY) for a specific member and edition.
      */
     public function findActiveByMemberAndEdition(Member $member, Edition $edition): ?Reservation

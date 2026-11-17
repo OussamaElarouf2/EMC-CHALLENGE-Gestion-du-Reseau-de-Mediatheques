@@ -5,13 +5,13 @@
 {% block body %}
 <div class="row">
     <div class="col-12 mb-4">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div>
                 <h1 class="h3 fw-bold mb-1">
                     <i class="bi bi-person-circle text-primary me-2"></i>Espace Adhérent
                 </h1>
                 <p class="text-muted mb-0">
-                    Bienvenue, {{ app.user.userIdentifier }}
+                    Bienvenue, <strong>{{ app.user.userIdentifier }}</strong>
                 </p>
             </div>
             <div>
@@ -26,8 +26,9 @@
 </div>
 
 {% if member %}
+    <!-- Summary Cards -->
     <div class="row g-3 mb-4">
-        <div class="col-md-3">
+        <div class="col-sm-6 col-md-3">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="text-muted small">Numéro de carte</div>
@@ -36,7 +37,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-sm-6 col-md-3">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="text-muted small">Formule d'abonnement</div>
@@ -45,7 +46,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-sm-6 col-md-3">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="text-muted small">Validité de la cotisation</div>
@@ -62,41 +63,249 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-sm-6 col-md-3">
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <div class="text-muted small">Durée d'emprunt autorisée</div>
-                    <div class="fs-5 fw-bold text-dark">
-                        {{ member.plan.loanDurationDays }} jours
+                    <div class="text-muted small">Solde des pénalités</div>
+                    <div class="fs-5 fw-bold {{ unpaidPenalties is not empty ? 'text-danger' : 'text-success' }}">
+                        {{ totalUnpaidAmount }} DH
                     </div>
                     <small class="text-muted">
-                        Prolongations : {{ member.plan.maxExtensions }} max
+                        {{ unpaidPenalties is not empty ? 'Règlement en médiathèque' : 'Aucun impayé' }}
                     </small>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Active loans & reservations placeholder (built in Step 11) -->
-    <div class="row g-4">
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white fw-bold py-3">
-                    <i class="bi bi-journal-bookmark me-2 text-primary"></i>Mes Emprunts en cours
+    <!-- Active Loans Section -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h2 class="h5 fw-bold mb-0 text-primary">
+                <i class="bi bi-journal-bookmark me-2"></i>Mes Emprunts en cours ({{ activeLoans|length }}/{{ member.plan.maxSimultaneousLoans }})
+            </h2>
+            <a href="{{ path('app_catalogue') }}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-plus-circle me-1"></i>Emprunter d'autres ouvrages
+            </a>
+        </div>
+        <div class="card-body p-0">
+            {% if activeLoans is empty %}
+                <div class="p-4 text-center text-muted">
+                    <i class="bi bi-book fs-3 d-block mb-2"></i>
+                    Vous n'avez aucun emprunt en cours actuellement.
                 </div>
-                <div class="card-body">
-                    <p class="text-muted small mb-0">Consultez et prolongez vos emprunts en cours. (Détail complet déployé à l'étape 11).</p>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Document</th>
+                                <th>Site</th>
+                                <th>Date d'emprunt</th>
+                                <th>Date d'échéance</th>
+                                <th>Prolongations</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for loan in activeLoans %}
+                                {% set isOverdue = loan.dueDate < date() %}
+                                <tr class="{{ isOverdue ? 'table-danger' : '' }}">
+                                    <td>
+                                        <a href="{{ path('app_catalogue_show', {id: loan.copy.edition.id}) }}" class="fw-bold text-decoration-none text-dark">
+                                            {{ loan.copy.edition.title }}
+                                        </a>
+                                        <div class="small text-muted font-monospace">{{ loan.copy.barcode }}</div>
+                                    </td>
+                                    <td>{{ loan.copy.currentBranch.name }}</td>
+                                    <td>{{ loan.borrowedAt|date('d/m/Y') }}</td>
+                                    <td>
+                                        <span class="fw-bold {{ isOverdue ? 'text-danger' : 'text-dark' }}">
+                                            {{ loan.dueDate|date('d/m/Y') }}
+                                        </span>
+                                        {% if isOverdue %}
+                                            <span class="badge bg-danger ms-1">En retard</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary-subtle text-secondary">
+                                            {{ loan.extensionCount }} / {{ member.plan.maxExtensions }}
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        {% if loan.extensionCount < member.plan.maxExtensions and not isOverdue %}
+                                            <form method="post" action="{{ path('app_member_loan_extend', {id: loan.id}) }}" class="d-inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('extend_loan_' ~ loan.id) }}">
+                                                <button type="submit" class="btn btn-outline-primary btn-sm">
+                                                    <i class="bi bi-arrow-repeat me-1"></i>Prolonger
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <button class="btn btn-outline-secondary btn-sm" disabled title="Prolongation non disponible">
+                                                <i class="bi bi-slash-circle me-1"></i>Non prolongeable
+                                            </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Active Reservations Section -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <h2 class="h5 fw-bold mb-0 text-primary">
+                <i class="bi bi-clock-history me-2"></i>Mes Réservations en cours ({{ reservations|length }})
+            </h2>
+        </div>
+        <div class="card-body p-0">
+            {% if reservations is empty %}
+                <div class="p-4 text-center text-muted">
+                    <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                    Vous n'avez aucune réservation en attente.
+                </div>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Édition réservée</th>
+                                <th>Site de retrait</th>
+                                <th>Date de demande</th>
+                                <th>Statut & Rang</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in reservations %}
+                                {% set res = item.reservation %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ path('app_catalogue_show', {id: res.edition.id}) }}" class="fw-bold text-decoration-none text-dark">
+                                            {{ res.edition.title }}
+                                        </a>
+                                        <div class="small text-muted">{{ res.edition.publisher }} ({{ res.edition.publicationYear }})</div>
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-building me-1 text-primary"></i>{{ res.pickupBranch.name }}
+                                    </td>
+                                    <td>{{ res.createdAt|date('d/m/Y H:i') }}</td>
+                                    <td>
+                                        {% if res.status.value == 'READY' %}
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check2-circle me-1"></i>Disponible pour retrait
+                                            </span>
+                                            {% if res.pickupDeadlineAt %}
+                                                <div class="small text-danger fw-semibold mt-1">
+                                                    À retirer avant le {{ res.pickupDeadlineAt|date('d/m/Y') }}
+                                                </div>
+                                            {% endif %}
+                                        {% elseif res.status.value == 'WAITING' %}
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="bi bi-hourglass-split me-1"></i>En attente (Rang : {{ item.rank }}{{ item.rank == 1 ? 'er' : 'ème' }})
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ res.status.value }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <form method="post" action="{{ path('app_member_reservation_cancel', {id: res.id}) }}" class="d-inline" onsubmit="return confirm('Confirmer l\'annulation de cette réservation ?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('cancel_reservation_' ~ res.id) }}">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                <i class="bi bi-x-circle me-1"></i>Annuler
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Loan History & Penalties -->
+    <div class="row g-4">
+        <!-- History -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h2 class="h6 fw-bold mb-0 text-dark">
+                        <i class="bi bi-archive me-2 text-primary"></i>Historique des derniers emprunts restitués
+                    </h2>
+                </div>
+                <div class="card-body p-0">
+                    {% if pastLoans is empty %}
+                        <div class="p-3 text-muted small text-center">Aucun emprunt passé enregistré.</div>
+                    {% else %}
+                        <div class="table-responsive small">
+                            <table class="table table-sm table-striped mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Document</th>
+                                        <th>Emprunté le</th>
+                                        <th>Restitué le</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for past in pastLoans %}
+                                        <tr>
+                                            <td>{{ past.copy.edition.title }}</td>
+                                            <td>{{ past.borrowedAt|date('d/m/Y') }}</td>
+                                            <td><span class="text-success">{{ past.returnedAt|date('d/m/Y') }}</span></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white fw-bold py-3">
-                    <i class="bi bi-clock-history me-2 text-primary"></i>Mes Réservations en attente
+        <!-- Unpaid Penalties -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h2 class="h6 fw-bold mb-0 text-dark">
+                        <i class="bi bi-exclamation-octagon me-2 text-danger"></i>Pénalités de retard à régler
+                    </h2>
                 </div>
-                <div class="card-body">
-                    <p class="text-muted small mb-0">Suivez le rang et la disponibilité de vos réservations. (Détail complet déployé à l'étape 11).</p>
+                <div class="card-body p-0">
+                    {% if unpaidPenalties is empty %}
+                        <div class="p-3 text-center text-success small">
+                            <i class="bi bi-check-circle fs-4 d-block mb-1"></i>
+                            Vous n'avez aucune pénalité impayée. Votre dossier est en règle.
+                        </div>
+                    {% else %}
+                        <div class="table-responsive small">
+                            <table class="table table-sm table-bordered mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Document</th>
+                                        <th>Motif</th>
+                                        <th class="text-end">Montant</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for penalty in unpaidPenalties %}
+                                        <tr>
+                                            <td>{{ penalty.loan.copy.edition.title }}</td>
+                                            <td>
+                                                <span class="badge bg-danger-subtle text-danger">{{ penalty.reason.value }}</span>
+                                            </td>
+                                            <td class="text-end fw-bold text-danger">{{ penalty.amount }} DH</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

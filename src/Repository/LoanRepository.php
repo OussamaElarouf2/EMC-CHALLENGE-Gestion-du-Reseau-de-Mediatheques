@@ -49,6 +49,45 @@ class LoanRepository extends ServiceEntityRepository
     }
 
     /**
+     * Finds currently active (unreturned) loans for a member.
+     *
+     * @return list<Loan>
+     */
+    public function findActiveLoansByMember(Member $member): array
+    {
+        return $this->createQueryBuilder('l')
+            ->join('l.copy', 'c')
+            ->join('c.edition', 'e')
+            ->addSelect('c', 'e')
+            ->where('l.member = :member')
+            ->andWhere('l.returnedAt IS NULL')
+            ->setParameter('member', $member)
+            ->orderBy('l.dueDate', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Finds past (returned) loans for a member.
+     *
+     * @return list<Loan>
+     */
+    public function findPastLoansByMember(Member $member, int $limit = 20): array
+    {
+        return $this->createQueryBuilder('l')
+            ->join('l.copy', 'c')
+            ->join('c.edition', 'e')
+            ->addSelect('c', 'e')
+            ->where('l.member = :member')
+            ->andWhere('l.returnedAt IS NOT NULL')
+            ->setParameter('member', $member)
+            ->orderBy('l.returnedAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Finds active loans that are overdue as of a given timestamp.
      *
      * @return list<Loan>
