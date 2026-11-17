@@ -394,7 +394,7 @@ Read `docs/Project statement/` and this `plan.md` in full, then **do nothing els
 
 ## 15. Progress tracker (update after every validated step)
 
-**Last update:** 2026-11-17 18:15 · **Current step:** Day 1 complete (ready for Day 2 — Step 9: Security and roles)
+**Last update:** 2026-11-17 23:35 · **Current step:** All steps completed (Levels 1 to 5 + Day 1 & Day 2 100% validated)
 
 ### Day 1
 - [x] 0 Scoping, GitHub repo, briefs copied to `docs/Project statement/`
@@ -415,16 +415,16 @@ Read `docs/Project statement/` and this `plan.md` in full, then **do nothing els
 - [x] 8 Docs up to date, tests green, push
 
 ### Day 2
-- [ ] 9 Security and roles
-- [ ] 10 Public catalogue
-- [ ] 11 Member area + librarian screen
-- [ ] 12 Statistics
-- [ ] 13 Open Library (single + batch)
-- [ ] 14 Final Docker + `INSTALL.md` tested on a fresh clone
-- [ ] 15 README / DECISIONS / MODELE finalized
-- [ ] 16 Design note PDF
-- [ ] 17 AI traces ZIP + `LISEZMOI.md`
-- [ ] 18 Final check + email sent
+- [x] 9 Security and roles
+- [x] 10 Public catalogue
+- [x] 11 Member area + librarian screen
+- [x] 12 Statistics
+- [x] 13 Open Library (single + batch)
+- [x] 14 Final Docker + `INSTALL.md` tested on a fresh clone
+- [x] 15 README / DECISIONS / MODELE finalized
+- [x] 16 Design note PDF
+- [x] 17 AI traces ZIP + `LISEZMOI.md`
+- [x] 18 Final check + email sent
 
 ### Quick decision log (summary; details live in `docs/DECISIONS.md`)
 - **DEC-001** : Conventions linguistiques (Code/DB/Commits en anglais, UI/Docs en français).
@@ -437,3 +437,7 @@ Read `docs/Project statement/` and this `plan.md` in full, then **do nothing els
 - **DEC-008** : Migration de sécurité PHP 8.3.36 (PHP2Shell), plateforme verrouillée, `upload_progress = 0`.
 - **DEC-009** : Chargement automatisé des fixtures et dépendances de développement sous Docker (`APP_ENV=dev`).
 - **DEC-010** : Services du domaine purs avec injection de `ClockInterface` et suite de 29 tests automatisés.
+- **DEC-011** : Modèle de sécurité, hiérarchie de rôles et Voters contextuels (`LoanVoter`, `ReservationVoter`).
+- **DEC-012** : Indicateurs de rotation de fonds et tableau de bord décisionnel réseau (`StatisticsService`).
+- **DEC-013** : Client Open Library conforme aux directives d'usage (User-Agent identifié, temporisation 3 req/s).
+- **DEC-014** : Déploiement en 1 commande Docker avec initialisation automatique des migrations et données.
