@@ -164,3 +164,25 @@ Option 3 :
 ### Conséquences
 - Forte garantie d'intégrité des données et haute résilience face aux écritures concurrentes, sans dépendre d'un SGBD spécifique comme PostgreSQL.
 - Comportement prévisible et exempt de deadlocks sur l'ensemble des scénarios de prêt et de réservation.
+
+
+---
+
+## [2026-11-17] DEC-008 : Dépendances de développement et chargement des fixtures sous Docker (Étape 14)
+
+### Contexte
+L'évaluation finale (Niveau 5) exige une livraison Docker clé en main exécutable en une seule commande (`docker compose up --build`), amorçant automatiquement la base de données, les migrations et un jeu de données réaliste (Niveau 1) avec comptes de démonstration pour le jury. Or, le paquet `doctrine/doctrine-fixtures-bundle` est une dépendance de développement (`--dev`).
+
+### Options considérées
+1. **Environnement de production strict (`APP_ENV=prod`) sans dépendances dev** : Nécessite d'injecter un dump SQL pré-généré dans le conteneur ou d'installer des fixtures dans le code de production. (Inconvénient : maintenance lourde de scripts SQL désynchronisés des entités Doctrine, perte de flexibilité pour le jury).
+2. **Environnement de démonstration/évaluation (`APP_ENV=dev`) avec dépendances dev dans l'image Docker** : L'image Docker de livraison installe l'ensemble des dépendances (y compris `--dev`) et s'exécute sous `APP_ENV=dev`.
+
+### Choix retenu
+Option 2 :
+- L'image Docker de livraison exécutera `composer install` avec les dépendances de développement et fonctionnera sous `APP_ENV=dev`.
+- L'entrypoint Docker pourra ainsi exécuter automatiquement `php bin/console doctrine:migrations:migrate --no-interaction` puis `php bin/console doctrine:fixtures:load --no-interaction`.
+- Le jury bénéficiera d'un environnement complet prêt à tester dès l'ouverture du navigateur, avec les profils de démonstration, la barre de débogage Symfony et les outils d'inspection.
+
+### Conséquences
+- Déploiement automatisé et infaillible en une seule commande (`docker compose up --build`).
+- Données de démonstration toujours synchronisées avec les entités et migrations Doctrine.

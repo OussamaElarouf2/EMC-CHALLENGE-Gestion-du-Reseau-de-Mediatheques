@@ -59,11 +59,22 @@ Pour le travail quotidien, l'application Symfony et les tests s'exécutent direc
 
 - **Base de données MySQL** :
   - Hôte Docker interne : `db:3306`
-  - Hôte local (via override) : `127.0.0.1:3306`
+  - Hôte local (via override) : `127.0.0.1:3307` (port 3307 exposé sur l'hôte pour éviter tout conflit avec un MySQL local)
   - Nom de la base : `mediatheque`
   - Utilisateur : `app_user`
   - Mot de passe : `app_password`
   - Utilisateur root : `root` / `root_password`
+
+- **Comptes utilisateurs de démonstration (Niveaux 1 à 3)** :
+  - **Administrateur** : `admin@mediatheque.local` / `Admin123!` (Rôle `ROLE_ADMIN`)
+  - **Bibliothécaire** : `librarian@mediatheque.local` / `Librarian123!` (Rôle `ROLE_LIBRARIAN`)
+  - **Adhérent standard** : `member@mediatheque.local` / `Member123!` (Rôle `ROLE_MEMBER`, abonnement valide, 1 prêt régulier + 1 prêt en retard)
+  - **Adhérent abonnement expiré** : `expired.member@mediatheque.local` / `Expired123!` (Rôle `ROLE_MEMBER`, abonnement expiré)
+
+- **Chargement du jeu de données de test** :
+  ```bash
+  php bin/console doctrine:fixtures:load --no-interaction
+  ```
 
 ---
 
