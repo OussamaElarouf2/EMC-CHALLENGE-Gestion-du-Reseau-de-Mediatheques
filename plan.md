@@ -394,7 +394,7 @@ Read `docs/Project statement/` and this `plan.md` in full, then **do nothing els
 
 ## 15. Progress tracker (update after every validated step)
 
-**Last update:** 2026-11-17 17:30 · **Current step:** Step 7 complete (ready for Step 8)
+**Last update:** 2026-11-17 18:15 · **Current step:** Day 1 complete (ready for Day 2 — Step 9: Security and roles)
 
 ### Day 1
 - [x] 0 Scoping, GitHub repo, briefs copied to `docs/Project statement/`
@@ -412,7 +412,7 @@ Read `docs/Project statement/` and this `plan.md` in full, then **do nothing els
 - [x] 7.5 `LoanService::extend()` + tests
 - [x] 7.6 `TransferService` + tests
 - [x] 7.7 Lost / damaged + tests
-- [ ] 8 Docs up to date, tests green, push
+- [x] 8 Docs up to date, tests green, push
 
 ### Day 2
 - [ ] 9 Security and roles
@@ -427,4 +427,13 @@ Read `docs/Project statement/` and this `plan.md` in full, then **do nothing els
 - [ ] 18 Final check + email sent
 
 ### Quick decision log (summary; details live in `docs/DECISIONS.md`)
-_(empty at the start)_
+- **DEC-001** : Conventions linguistiques (Code/DB/Commits en anglais, UI/Docs en français).
+- **DEC-002** : Distinction Œuvre (`Work`) / Édition (`Edition`) / Exemplaire (`Copy`).
+- **DEC-003** : Réservation inter-sites autorisée avec création automatique d'un transfert logistique.
+- **DEC-004** : Délai de mise de côté de 5 jours ouvrés démarrant à la mise à disposition de l'exemplaire.
+- **DEC-005** : Entité de liaison `EditionContributor` ordonnée avec rôles typés (`AUTHOR`, `TRANSLATOR`, etc.).
+- **DEC-006** : Priorité au catalogue local sur l'API Open Library ; import partiel marqué `TO_COMPLETE`.
+- **DEC-007** : Intégrité concurrente sous MySQL 8 (index partiels simulés `activeCopyId`, `activeMemberEditionKey`).
+- **DEC-008** : Migration de sécurité PHP 8.3.36 (PHP2Shell), plateforme verrouillée, `upload_progress = 0`.
+- **DEC-009** : Chargement automatisé des fixtures et dépendances de développement sous Docker (`APP_ENV=dev`).
+- **DEC-010** : Services du domaine purs avec injection de `ClockInterface` et suite de 29 tests automatisés.
