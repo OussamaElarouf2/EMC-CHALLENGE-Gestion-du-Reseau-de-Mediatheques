@@ -394,7 +394,7 @@ Read `docs/Project statement/` and this `plan.md` in full, then **do nothing els
 
 ## 15. Progress tracker (update after every validated step)
 
-**Last update:** 2026-11-17 12:15 · **Current step:** Step 4 complete (ready for Step 5)
+**Last update:** 2026-11-17 13:40 · **Current step:** Step 5 complete (ready for Step 6)
 
 ### Day 1
 - [x] 0 Scoping, GitHub repo, briefs copied to `docs/Project statement/`
@@ -402,7 +402,7 @@ Read `docs/Project statement/` and this `plan.md` in full, then **do nothing els
 - [x] 2 Docker (stack boots)
 - [x] 3 `MODELE.md` validated + initial `DECISIONS.md`
 - [x] 4 Entities + migrations
-- [ ] 5 Fixtures + Faker
+- [x] 5 Fixtures + Faker
 - [ ] 6 EasyAdmin
 - [ ] 7.1 Common groundwork (clock, exceptions, test DB)
 - [ ] 7.2 `LoanService::borrow()` + tests
