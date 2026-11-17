@@ -315,7 +315,7 @@ Quota reached · duration per plan · expired subscription · unpaid penalty blo
 
 | # | Step | Time | Deliverable | Level |
 |---|---|---|---|---|
-| 9 | **Security**: login, 3 roles, hierarchy, `access_control`, Voters, CSRF, demo accounts. Functional access tests. | 1 h 30 | Auth + roles | 3 |
+| 9 | **Security**: login, 3 roles, hierarchy, `access_control`, Voters, CSRF, demo accounts. Functional access tests. | **Completed** (49 tests passing, security voters + functional auth tests) | Auth + roles | 3 |
 | 10 | **Public catalogue**: paginated list, search (title, author, ISBN), edition page with availability per branch, reserve button. | 1 h 30 | Catalogue | 3 |
 | 11 | **Member area** (current loans, reservations, history, extension) and **librarian screen** (loan, return, reservation handling). | 1 h 30 | Member + librarian areas | 3 |
 | 12 | **Statistics**: turnover rate, most borrowed, never borrowed (repository / `StatisticsService` queries). | 1 h | Dashboard | 3 |
