@@ -19,7 +19,7 @@ docker compose up --build
 ```
 
 Cette commande :
-1. Construit l'image PHP 8.2-FPM avec toutes les extensions nécessaires (`intl`, `pdo_mysql`, `mbstring`, `xml`, `ctype`, `iconv`, `zip`, `opcache`).
+1. Construit l'image PHP 8.3-FPM (`php:8.3.36-fpm-alpine` durcie sans upload_progress) avec toutes les extensions nécessaires (`intl`, `pdo_mysql`, `mbstring`, `xml`, `ctype`, `iconv`, `zip`, `opcache`).
 2. Démarre le serveur web Nginx sur le port `8080`.
 3. Démarre le serveur de base de données MySQL 8 (avec healthcheck).
 4. Exécute le script d'entrée (`docker-entrypoint.sh`) qui attend la disponibilité effective de MySQL avant de chauffer le cache (et appliquera automatiquement les migrations et les données de démonstration dans les niveaux suivants).
@@ -32,10 +32,12 @@ Cette commande :
 
 ## 2. Développement Local (Hybride)
 
-Pour le travail quotidien, l'application Symfony et les tests s'exécutent directement sur l'hôte avec PHP 8.2 et Composer, tandis que MySQL tourne dans un conteneur isolé.
+Pour le travail quotidien, l'application Symfony et les tests s'exécutent directement sur l'hôte avec PHP 8.3 et Composer, tandis que MySQL tourne dans un conteneur isolé.
 
 ### Prérequis locaux
-- PHP 8.2+ avec les extensions actives : `intl`, `pdo_mysql`, `mbstring`, `xml`, `ctype`, `iconv`, `zip`.
+- **PHP >= 8.3.36** (immunisé contre PHP2Shell CVE-2026-109618 / CVE-2026-109619) avec :
+  - `session.upload_progress.enabled = Off` dans `php.ini`.
+  - Extensions actives : `intl`, `pdo_mysql`, `mbstring`, `xml`, `ctype`, `iconv`, `zip`, `curl`, `openssl`.
 - Composer 2+.
 
 ### Démarrage de la base de données
@@ -43,12 +45,12 @@ Pour le travail quotidien, l'application Symfony et les tests s'exécutent direc
    ```bash
    cp compose.override.yaml.dist compose.override.yaml
    ```
-   *(Ce fichier lie le port MySQL 3306 sur `127.0.0.1` pour votre machine hôte).*
+   *(Ce fichier lie le port MySQL sur `127.0.0.1:3307` ou `3308` pour éviter les collisions avec un service MySQL local hôte).*
 2. Démarrez le service de base de données :
    ```bash
    docker compose up -d db
    ```
-3. L'application locale communique avec MySQL sur `127.0.0.1:3306` avec les identifiants configurés dans `.env`.
+3. L'application locale communique avec MySQL sur le port configuré (ex: `127.0.0.1:3308` via `.env.local` git-ignoré).
 
 ---
 
@@ -59,7 +61,7 @@ Pour le travail quotidien, l'application Symfony et les tests s'exécutent direc
 
 - **Base de données MySQL** :
   - Hôte Docker interne : `db:3306`
-  - Hôte local (via override) : `127.0.0.1:3307` (port 3307 exposé sur l'hôte pour éviter tout conflit avec un MySQL local)
+  - Hôte local (via override) : `127.0.0.1:3308` (ou `3307`, port exposé sur l'hôte pour éviter tout conflit avec un MySQL local)
   - Nom de la base : `mediatheque`
   - Utilisateur : `app_user`
   - Mot de passe : `app_password`

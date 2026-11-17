@@ -168,7 +168,32 @@ Option 3 :
 
 ---
 
-## [2026-11-17] DEC-008 : Dépendances de développement et chargement des fixtures sous Docker (Étape 14)
+## [2026-11-17] DEC-008 : Migration de sécurité vers PHP 8.3 (PHP2Shell CVE-2026-109618 / CVE-2026-109619) et durcissement
+
+### Contexte
+La publication des vulnérabilités critiques PHP2Shell (CVE-2026-109618 et CVE-2026-109619, exécution de code à distance non authentifiée via `session.upload_progress`) affecte toutes les versions de PHP inférieures à 8.2.35 / 8.3.36 / 8.4.27. De plus, la branche PHP 8.2 atteint sa fin de vie (End Of Life) le 31 décembre 2026. L'environnement initial du projet (PHP 8.2.12 sur l'hôte et image Docker `php:8.2-fpm-alpine`) présentait un risque direct d'exploitation et de péremption imminente.
+
+### Options considérées
+1. **Rester sur PHP 8.2 en appliquant le patch 8.2.35** : Corrige temporairement les failles CVE mais conserve une branche en fin de vie sous quelques semaines, obligeant à une migration future.
+2. **Migrer vers PHP 8.3 avec un patch minimal 8.3.36 (Retenu)** : Branche activement supportée jusqu'à fin 2027, mature, stable, pleinement supportée par Symfony 7.4 et Doctrine ORM 3, corrigeant définitivement PHP2Shell.
+3. **Migrer immédiatement vers PHP 8.4** : Version très récente (8.4.27+), risquant d'introduire des dépréciations ou incompatibilités avec certains bundles communautaires.
+
+### Choix retenu
+Option 2 (PHP 8.3 avec version minimale 8.3.36) :
+- **Environnement local hôte** : Exigence d'un runtime local `PHP >= 8.3.36` avec `session.upload_progress.enabled = Off`.
+- **Épinglage Docker strict** : Utilisation d'un tag d'image immuable et vérifié sur Docker Hub : `php:8.3.36-fpm-alpine` (aucun tag flottant `php:8.3-fpm` ou `latest`).
+- **Durcissement INI versionné** : Injection dans l'image Docker du fichier `docker/php/conf.d/security.ini` contenant `session.upload_progress.enabled = 0` pour neutraliser préventivement tout vecteur d'attaque.
+- **Verrouillage Composer** : Mise à jour de `composer.json` avec `"php": ">=8.3"` et verrouillage de la plateforme cible `"config": {"platform": {"php": "8.3.0"}}` pour garantir que le graphe de dépendances et `composer.lock` restent strictement reproductibles sur toute machine.
+- **Remplacement de polyfill** : Déclaration de `"symfony/polyfill-php83": "*"` dans la section `replace` de `composer.json` pour supprimer le polyfill devenu inutile sous PHP 8.3 natif.
+
+### Conséquences
+- Résilience et immunité totales face aux failles PHP2Shell.
+- Pérennité du socle technique au-delà de l'échéance EOL de PHP 8.2.
+- Parfaite cohérence entre le runtime hôte (8.3.36), le runtime conteneurisé (8.3.36) et le verrouillage de plateforme Composer (8.3.0).
+
+---
+
+## [2026-11-17] DEC-009 : Dépendances de développement et chargement des fixtures sous Docker (Étape 14)
 
 ### Contexte
 L'évaluation finale (Niveau 5) exige une livraison Docker clé en main exécutable en une seule commande (`docker compose up --build`), amorçant automatiquement la base de données, les migrations et un jeu de données réaliste (Niveau 1) avec comptes de démonstration pour le jury. Or, le paquet `doctrine/doctrine-fixtures-bundle` est une dépendance de développement (`--dev`).
