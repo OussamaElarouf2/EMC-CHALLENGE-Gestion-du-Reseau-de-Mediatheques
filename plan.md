@@ -394,7 +394,7 @@ Read `docs/Project statement/` and this `plan.md` in full, then **do nothing els
 
 ## 15. Progress tracker (update after every validated step)
 
-**Last update:** 2026-11-17 16:50 · **Current step:** Step 6 complete (ready for Step 7.1)
+**Last update:** 2026-11-17 17:30 · **Current step:** Step 7 complete (ready for Step 8)
 
 ### Day 1
 - [x] 0 Scoping, GitHub repo, briefs copied to `docs/Project statement/`
@@ -405,13 +405,13 @@ Read `docs/Project statement/` and this `plan.md` in full, then **do nothing els
 - [x] 5 Fixtures + Faker
 - [x] 5b PHP security upgrade (PHP2Shell CVE-2026-109618 / CVE-2026-109619, PHP 8.3.36, upload_progress disabled, platform pinned)
 - [x] 6 EasyAdmin
-- [ ] 7.1 Common groundwork (clock, exceptions, test DB)
-- [ ] 7.2 `LoanService::borrow()` + tests
-- [ ] 7.3 `LoanService::return()` + penalties + tests
-- [ ] 7.4 `ReservationQueueService` + tests
-- [ ] 7.5 `LoanService::extend()` + tests
-- [ ] 7.6 `TransferService` + tests
-- [ ] 7.7 Lost / damaged + tests
+- [x] 7.1 Common groundwork (clock, exceptions, test DB)
+- [x] 7.2 `LoanService::borrow()` + tests
+- [x] 7.3 `LoanService::return()` + penalties + tests
+- [x] 7.4 `ReservationQueueService` + tests
+- [x] 7.5 `LoanService::extend()` + tests
+- [x] 7.6 `TransferService` + tests
+- [x] 7.7 Lost / damaged + tests
 - [ ] 8 Docs up to date, tests green, push
 
 ### Day 2
