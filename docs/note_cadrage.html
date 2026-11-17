@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Note de Cadrage — Système de Gestion de Médiathèques</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 10mm 14mm 10mm 14mm;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            font-size: 8.8pt;
+            line-height: 1.32;
+            color: #1e293b;
+            background: #fff;
+        }
+        .header {
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .header h1 {
+            font-size: 14pt;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: -0.3px;
+        }
+        .header .subtitle {
+            font-size: 9pt;
+            color: #2563eb;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+        .header .meta {
+            text-align: right;
+            font-size: 7.8pt;
+            color: #64748b;
+            line-height: 1.25;
+        }
+        .header .meta strong {
+            color: #334155;
+        }
+        .section {
+            margin-bottom: 7px;
+        }
+        .section-title {
+            font-size: 9.2pt;
+            font-weight: 700;
+            color: #1e40af;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 2px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+        }
+        .section-title span.num {
+            background: #2563eb;
+            color: #fff;
+            font-size: 7.5pt;
+            font-weight: 700;
+            border-radius: 3px;
+            padding: 1px 4px;
+            margin-right: 5px;
+        }
+        p {
+            margin-bottom: 4px;
+            text-align: justify;
+        }
+        ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 3px;
+        }
+        ul li {
+            position: relative;
+            padding-left: 11px;
+            margin-bottom: 2px;
+            text-align: justify;
+        }
+        ul li::before {
+            content: "•";
+            position: absolute;
+            left: 2px;
+            color: #2563eb;
+            font-weight: bold;
+        }
+        strong {
+            color: #0f172a;
+            font-weight: 600;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .highlight-box {
+            background: #f8fafc;
+            border-left: 3px solid #2563eb;
+            padding: 4px 8px;
+            margin: 4px 0;
+            font-size: 8.2pt;
+            color: #334155;
+        }
+        .footer {
+            margin-top: 6px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 4px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 7.2pt;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <h1>Système de Gestion de Médiathèques</h1>
+            <div class="subtitle">Note de Cadrage Conceptuelle & Synthèse d'Architecture — Sujet 4</div>
+        </div>
+        <div class="meta">
+            <strong>Challenge PFE EMC 2026</strong><br>
+            Candidat : <strong>Oussama El Arouf</strong><br>
+            Durée : 2 jours | Stack : Symfony 7.4 / PHP 8.3 / MySQL 8
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span class="num">1</span> Choix du Sujet & Motivation</div>
+        <p>
+            Le <strong>Sujet 4 (Réseau de médiathèques)</strong> a été choisi pour son haut niveau d'exigence en ingénierie logicielle et sa richesse métier. Au-delà d'un simple CRUD, la gestion multi-sites soulève des défis industriels majeurs : modélisation bibliographique fine (norme FRBR), logistique inter-sites, intégrité sous fortes concurrences de réservation (files FIFO) et interopérabilité avec un service externe public (Open Library) soumis à des limites de débit strictes.
+        </p>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span class="num">2</span> Décomposition du Besoin & Protocole de Réalisation</div>
+        <p>
+            Le projet a été exécuté selon un découpage progressif en 5 niveaux, encadré par le protocole méthodologique <em>Planifier &rarr; Valider &rarr; Exécuter &rarr; Vérifier &rarr; Commiter</em> :
+        </p>
+        <ul>
+            <li><strong>Niveau 1 (Modèle & Back-Office)</strong> : Schéma relationnel complet (13 entités), migrations Doctrine, fixtures volumétriques (~300 exemplaires) et administration EasyAdmin 4.</li>
+            <li><strong>Niveau 2 (Règles Métier & Concurrence)</strong> : Services purs (<code>LoanService</code>, <code>ReservationQueueService</code>, <code>TransferService</code>, <code>PenaltyCalculator</code>) et 29 tests automatisés.</li>
+            <li><strong>Niveau 3 (Expérience Utilisateur & Métriques)</strong> : Authentification à 3 rôles hiérarchiques, catalogue public réactif, espace adhérent avec Voters Symfony, guichet express et calcul du taux de rotation.</li>
+            <li><strong>Niveau 4 (Interopérabilité Open Library)</strong> : Client HTTP identifié (User-Agent conforme), limitation 3 req/s, préservation des données locales et import par lot CLI.</li>
+            <li><strong>Niveau 5 (Livraison Clé en Main)</strong> : Conteneurisation Docker exécutable en 1 commande (<code>docker compose up --build -d</code>) avec amorçage automatique.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span class="num">3</span> Choix d'Architecture Majeurs & Compromis</div>
+        <ul>
+            <li><strong>Modélisation FRBR (<code>Work</code> &rarr; <code>Edition</code> &rarr; <code>Copy</code>)</strong> : Séparation stricte de l'œuvre intellectuelle et de ses publications concrètes (livres, BD, DVD). Les contributeurs multiples (auteurs, illustrateurs, traducteurs) sont reliés par l'entité pivot <code>EditionContributor</code> avec rôle typé et position d'affichage.</li>
+            <li><strong>Concurrence sous MySQL 8 (<code>REPEATABLE READ</code>)</strong> : Double protection contre les race conditions sans dépendre d'index partiels : (1) Verrouillage pessimiste ordonné déterministe (Member puis Copy) éliminant tout risque de <em>deadlock</em> ; (2) Colonnes d'unicité nullables (<code>activeCopyId</code> et <code>activeMemberEditionKey</code>) interdisant physiquement le double prêt et la double réservation au niveau SGBD.</li>
+            <li><strong>Logistique Inter-sites & Statut Pivot <code>AWAITING_TRANSFER</code></strong> : La réservation d'un document sur l'autre site assigne l'exemplaire (<code>IN_TRANSIT</code>) et passe immédiatement la réservation à <code>AWAITING_TRANSFER</code>. Elle quitte instantanément la file <code>WAITING</code>, interdisant toute double allocation lors d'un retour simultané. Le délai de retrait de 5 jours débute uniquement à la réception physique au site de retrait (<code>READY</code>).</li>
+            <li><strong>Durcissement de Sécurité PHP 8.3 (PHP2Shell)</strong> : En mitigation préventive des vulnérabilités CVE-2026-109618 / CVE-2026-109619 et de la fin de vie de PHP 8.2, le projet est verrouillé sur PHP 8.3.36 avec désactivation stricte de <code>session.upload_progress.enabled</code>.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span class="num">4</span> Rôle & Supervision Critique des Outils d'IA</div>
+        <p>
+            L'intelligence artificielle a été exploitée comme accélérateur de productivité sous pilotage humain rigoureux :
+        </p>
+        <ul>
+            <li><strong>Gains mesurés</strong> : Génération rapide des structures d'entités, mise en page des gabarits Twig/Bootstrap 5, élaboration de jeux d'essais volumétriques (Faker) et formalisation des jeux de tests PHPUnit.</li>
+            <li><strong>Contrôle et arbitrage de l'ingénieur</strong> : Correction d'erreurs subtiles générées par l'IA, notamment sur des requêtes DQL complexes sous Doctrine 3 (interdiction de sélection d'entités non racines dans un <code>GROUP BY</code>) et la gestion fine de la concurrence transactionnelle. Le filet de sécurité de <strong>85 tests automatisés (382 assertions passantes à 100%)</strong> a garanti l'infaillibilité du système.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <div class="section-title"><span class="num">5</span> Ce que je ferais avec une Semaine de Plus</div>
+        <ul>
+            <li><strong>Notifications Événementielles (Email / SMS)</strong> : Envoi automatisé via <code>symfony/mailer</code> et webhooks SMS d'un avis de mise à disposition dès l'arrivée du document réservé, couplé à une alerte de rappel à J-1 avant l'expiration des 5 jours.</li>
+            <li><strong>API REST/GraphQL pour Bornes Automates & Kiosques RFID</strong> : Exposition d'endpoints sécurisés (API Platform / OAuth2) pour automatiser le prêt et le retour physique sans intervention humaine au guichet.</li>
+            <li><strong>Navettes Inter-sites Programmées</strong> : Module logistique de groupage des transferts avec génération de bordereaux de transport, planning des tournées hebdomadaires et émargement numérique par les chauffeurs.</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <span>Système de Gestion de Médiathèques — EMC PFE 2026 — Sujet 4</span>
+        <span>Validation : 85 tests / 382 assertions passants (100%) — Note de Cadrage (1 page A4)</span>
+    </div>
+
+</body>
+</html>
