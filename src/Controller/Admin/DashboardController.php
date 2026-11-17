@@ -64,6 +64,7 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Tableau de bord', 'fa fa-gauge');
+        yield MenuItem::linkToRoute('Guichet Express (Prêt/Retour)', 'fa fa-cash-register', 'app_librarian_desk');
         yield MenuItem::linkToRoute('Catalogue public', 'fa fa-globe', 'app_catalogue');
 
         yield MenuItem::section('Catalogue');

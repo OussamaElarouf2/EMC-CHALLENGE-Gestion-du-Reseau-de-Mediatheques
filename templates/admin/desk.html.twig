@@ -1,0 +1,152 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Guichet Circulation — Médiathèque{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 fw-bold mb-1 text-primary">
+            <i class="bi bi-hdd-rack me-2"></i>Guichet Circulation & Prêts Rapides
+        </h1>
+        <p class="text-muted mb-0">Enregistrez les départs et les retours d'exemplaires au comptoir.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ path('admin') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-speedometer2 me-1"></i>Administration EasyAdmin
+        </a>
+        <a href="{{ path('app_catalogue') }}" class="btn btn-outline-primary">
+            <i class="bi bi-search me-1"></i>Catalogue
+        </a>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Borrow Form (Prêt) -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-primary text-white py-3">
+                <h2 class="h5 fw-bold mb-0">
+                    <i class="bi bi-box-arrow-right me-2"></i>1. Enregistrer un Emprunt
+                </h2>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" action="{{ path('app_librarian_desk_borrow') }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('desk_borrow') }}">
+
+                    <div class="mb-3">
+                        <label for="borrowCardNumber" class="form-label fw-bold">Numéro de carte adhérent</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                            <input type="text" name="membershipNumber" id="borrowCardNumber" class="form-control font-monospace" placeholder="ex: CARD-001" required autofocus>
+                        </div>
+                        <div class="form-text small">Scannez ou saisissez l'identifiant de la carte adhérent.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="borrowBarcode" class="form-label fw-bold">Code-barres exemplaire</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
+                            <input type="text" name="barcode" id="borrowBarcode" class="form-control font-monospace" placeholder="ex: BC-12345" required>
+                        </div>
+                        <div class="form-text small">Scannez le code-barres apposé sur le document.</div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle me-1"></i> Valider l'emprunt
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Return Form (Retour) -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-success text-white py-3">
+                <h2 class="h5 fw-bold mb-0">
+                    <i class="bi bi-box-arrow-in-left me-2"></i>2. Enregistrer un Retour
+                </h2>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" action="{{ path('app_librarian_desk_return') }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('desk_return') }}">
+
+                    <div class="mb-3">
+                        <label for="returnBarcode" class="form-label fw-bold">Code-barres exemplaire retourné</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
+                            <input type="text" name="barcode" id="returnBarcode" class="form-control font-monospace" placeholder="ex: BC-12345" required>
+                        </div>
+                        <div class="form-text small">
+                            Le système recalcule automatiquement les pénalités de retard et réattribue l'exemplaire si une réservation est en attente.
+                        </div>
+                    </div>
+
+                    <div class="alert alert-light border small mt-4 mb-4">
+                        <i class="bi bi-info-circle me-1 text-primary"></i>
+                        En cas de document réservé, le système vous indiquera s'il doit être mis de côté au guichet ou expédié via navette inter-sites.
+                    </div>
+
+                    <div class="d-grid mt-auto">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-arrow-down-circle me-1"></i> Valider le retour
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Active Loans Table -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white py-3">
+        <h2 class="h6 fw-bold mb-0 text-dark">
+            <i class="bi bi-clock-history me-2 text-primary"></i>Derniers emprunts en cours dans le réseau
+        </h2>
+    </div>
+    <div class="card-body p-0">
+        {% if recentLoans is empty %}
+            <div class="p-4 text-center text-muted">Aucun emprunt en cours enregistré.</div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Document</th>
+                            <th>Code-barres</th>
+                            <th>Adhérent</th>
+                            <th>Emprunté le</th>
+                            <th>Échéance</th>
+                            <th>Site actuel</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for loan in recentLoans %}
+                            <tr>
+                                <td class="fw-bold">{{ loan.copy.edition.title }}</td>
+                                <td class="font-monospace small">{{ loan.copy.barcode }}</td>
+                                <td>
+                                    <span>{{ loan.member.user.email }}</span>
+                                    <div class="small text-muted font-monospace">{{ loan.member.membershipNumber }}</div>
+                                </td>
+                                <td>{{ loan.borrowedAt|date('d/m/Y') }}</td>
+                                <td>
+                                    {% if loan.dueDate < date() %}
+                                        <span class="text-danger fw-bold">{{ loan.dueDate|date('d/m/Y') }} (En retard)</span>
+                                    {% else %}
+                                        <span>{{ loan.dueDate|date('d/m/Y') }}</span>
+                                    {% endif %}
+                                </td>
+                                <td><span class="badge bg-light text-dark border">{{ loan.copy.currentBranch.name }}</span></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

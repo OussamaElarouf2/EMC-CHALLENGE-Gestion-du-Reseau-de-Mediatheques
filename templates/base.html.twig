@@ -47,6 +47,11 @@
                             {% endif %}
                             {% if is_granted('ROLE_LIBRARIAN') %}
                                 <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('app_librarian_desk') }}">
+                                        <i class="bi bi-hdd-rack me-1"></i>Guichet
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link" href="{{ path('admin') }}">
                                         <i class="bi bi-gear-fill me-1"></i>Administration
                                     </a>
