@@ -377,3 +377,133 @@ Pour garantir un niveau de qualité irréprochable sans dispersion dans le budge
 | 27 | Rejet physique MySQL du double emprunt simultané | `DoubleBorrowConcurrencyTest` | `test_concurrent_double_loan_is_prevented_by_active_copy_id_unique_index` | Validé |
 | 28 | Coexistence historique sans conflit des prêts rendus | `DoubleBorrowConcurrencyTest` | `test_returned_loans_do_not_conflict_because_active_copy_id_is_null` | Validé |
 | 29 | Rejet physique MySQL de la double réservation active | `DoubleBorrowConcurrencyTest` | `test_active_reservation_unique_key_blocks_duplicate_concurrent_reservations` | Validé |
+
+### C. Matrice des Tests de Sécurité et d'Autorisation (Niveau 3)
+
+| # | Règle / Scénario d'Autorisation | Classe de Test | Méthode de Test | Résultat |
+|---|---|---|---|---|
+| 30 | Prolongation autorisée pour le titulaire du prêt | `LoanVoterTest` | `test_vote_on_attribute_extend_granted_to_loan_owner` | Validé |
+| 31 | Prolongation refusée pour un tiers adhérent | `LoanVoterTest` | `test_vote_on_attribute_extend_denied_to_other_member` | Validé |
+| 32 | Prolongation autorisée pour un bibliothécaire | `LoanVoterTest` | `test_vote_on_attribute_extend_granted_to_librarian` | Validé |
+| 33 | Vote neutre sur attribut non géré | `LoanVoterTest` | `test_vote_abstained_on_unsupported_attribute` | Validé |
+| 34 | Annulation autorisée pour le titulaire de la réservation | `ReservationVoterTest` | `test_vote_on_attribute_cancel_granted_to_reservation_owner` | Validé |
+| 35 | Annulation refusée pour un tiers adhérent | `ReservationVoterTest` | `test_vote_on_attribute_cancel_denied_to_other_member` | Validé |
+| 36 | Annulation autorisée pour un bibliothécaire | `ReservationVoterTest` | `test_vote_on_attribute_cancel_granted_to_librarian` | Validé |
+| 37 | Vote neutre sur attribut de réservation non géré | `ReservationVoterTest` | `test_vote_abstained_on_unsupported_attribute` | Validé |
+| 38 | Page de connexion accessible publiquement (200 OK) | `SecurityAccessTest` | `test_login_page_is_publicly_accessible` | Validé |
+| 39 | Accès espace adhérent refusé aux anonymes (redirection login) | `SecurityAccessTest` | `test_member_area_requires_authentication` | Validé |
+| 40 | Accès guichet refusé aux adhérents sans rôle bibliothécaire (403) | `SecurityAccessTest` | `test_librarian_desk_forbidden_for_regular_member` | Validé |
+| 41 | Accès back-office refusé aux adhérents (403) | `SecurityAccessTest` | `test_admin_area_forbidden_for_regular_member` | Validé |
+| 42 | Connexion réussie et redirection vers espace adhérent | `SecurityAccessTest` | `test_successful_login_redirects_appropriately` | Validé |
+| 43 | Rejet des identifiants invalides avec message d'erreur | `SecurityAccessTest` | `test_invalid_credentials_shows_error` | Validé |
+
+### D. Matrice des Tests Catalogue Public, Espace Adhérent et Guichet (Niveau 3)
+
+| # | Règle / Parcours Utilisateur | Classe de Test | Méthode de Test | Résultat |
+|---|---|---|---|---|
+| 44 | Catalogue accessible publiquement avec liste d'éditions | `CatalogueControllerTest` | `test_catalogue_index_displays_editions` | Validé |
+| 45 | Recherche par mot-clé (titre ou auteur) | `CatalogueControllerTest` | `test_catalogue_search_by_query` | Validé |
+| 46 | Filtrage par type de support (`BOOK`, `COMIC`, `DVD`) | `CatalogueControllerTest` | `test_catalogue_filter_by_type` | Validé |
+| 47 | Fiche détaillée avec exemplaires et statuts par site | `CatalogueControllerTest` | `test_edition_detail_shows_copies_and_availability` | Validé |
+| 48 | Réservation directe depuis la notice détaillée | `CatalogueControllerTest` | `test_authenticated_member_can_reserve_edition` | Validé |
+| 49 | Espace adhérent affichant emprunts, réservations et pénalités | `MemberAreaControllerTest` | `test_member_dashboard_displays_loans_and_reservations` | Validé |
+| 50 | Prolongation réussie d'un emprunt en cours | `MemberAreaControllerTest` | `test_member_can_extend_eligible_loan` | Validé |
+| 51 | Refus d'annulation sur la réservation d'un tiers | `MemberAreaControllerTest` | `test_member_cannot_cancel_other_member_reservation` | Validé |
+| 52 | Guichet bibliothécaire affichant la recherche d'exemplaire | `LibrarianDeskControllerTest` | `test_librarian_desk_page_loads_for_librarian` | Validé |
+| 53 | Enregistrement d'un emprunt express au guichet | `LibrarianDeskControllerTest` | `test_quick_borrow_action_success` | Validé |
+| 54 | Enregistrement d'un retour avec calcul immédiat de pénalité | `LibrarianDeskControllerTest` | `test_quick_return_action_creates_penalty_if_late` | Validé |
+
+### E. Matrice des Tests Statistiques et Rotation des Fonds (Niveau 3)
+
+| # | Indicateur / Calcul Statistique | Classe de Test | Méthode de Test | Résultat |
+|---|---|---|---|---|
+| 55 | Calcul exact du taux de rotation global et par site | `StatisticsServiceTest` | `test_turnover_rate_calculation_per_branch_and_global` | Validé |
+| 56 | Palmarès des documents les plus empruntés (TOP N) | `StatisticsServiceTest` | `test_most_borrowed_editions_ranking` | Validé |
+| 57 | Identification exhaustive des exemplaires jamais empruntés | `StatisticsServiceTest` | `test_never_borrowed_copies_list` | Validé |
+| 58 | Tableau de bord `/admin/stats` accessible aux bibliothécaires | `StatisticsControllerTest` | `test_statistics_dashboard_displays_all_kpis` | Validé |
+
+### F. Matrice des Tests d'Intégration Open Library (Niveau 4)
+
+| # | Fonctionnalité Open Library | Classe de Test | Méthode de Test | Résultat |
+|---|---|---|---|---|
+| 59 | Appel API avec parsing JSON des titres, auteurs et jaquettes | `OpenLibraryClientTest` | `test_fetch_by_isbn_success_with_complete_data` | Validé |
+| 60 | En-tête `User-Agent` officiel et limitation conforme aux directives | `OpenLibraryClientTest` | `test_client_sends_official_user_agent_header` | Validé |
+| 61 | Gestion gracieuse d'une réponse 404 (ISBN inexistant) | `OpenLibraryClientTest` | `test_fetch_by_isbn_returns_null_on_404` | Validé |
+| 62 | Détection des métadonnées incomplètes (`isComplete = false`) | `OpenLibraryClientTest` | `test_fetch_by_isbn_marks_incomplete_when_fields_missing` | Validé |
+| 63 | Création en base locale avec statut `COMPLETE` | `BookImporterTest` | `test_import_creates_new_work_edition_and_contributors` | Validé |
+| 64 | Création avec statut `TO_COMPLETE` si données partielles | `BookImporterTest` | `test_import_flags_incomplete_when_metadata_missing` | Validé |
+| 65 | Non-écrasement des notices existantes (`SKIPPED`, DEC-006) | `BookImporterTest` | `test_import_skips_existing_isbn_without_overwriting` | Validé |
+| 66 | Import par lot CLI `app:import-isbn` avec fichier texte | `ImportIsbnCommandTest` | `test_execute_batch_import_from_file` | Validé |
+| 67 | Interface web bibliothécaire `/librarian/import` avec prévisualisation | `LibrarianImportControllerTest` | `test_import_single_isbn_web_form` | Validé |
+
+---
+
+## 9. Synthèse Globale de la Suite de Tests (85 Tests / 382 Assertions)
+
+```
+PHPUnit 12.5.44 (PHP 8.3.36)
+Configuration: phpunit.dist.xml
+Résultat: OK (85 tests, 382 assertions — 100% passants)
+Temps d'exécution moyen: ~39 secondes
+```
+
+- **Tests Unitaires et Domaine (29 tests)** : Règles métier pures, calculs de pénalités décimales, horloges simulées `MockClock`, concurrence MySQL.
+- **Tests de Sécurité et Autorisation (14 tests)** : Hiérarchie des rôles, Voters contextuels `LoanVoter` et `ReservationVoter`, pare-feu Symfony.
+- **Tests Fonctionnels Catalogue & Usagers (15 tests)** : Recherche, navigation, fiches détaillées, espace adhérent, guichet express.
+- **Tests Statistiques & Indicateurs (6 tests)** : Taux de rotation, requêtes d'agrégation groupée, top emprunts, fonds dormants.
+- **Tests d'Intégration Externe Open Library (21 tests)** : Client HTTP, mocks d'API externe, commande CLI par lot avec rapport, formulaires web.
+
+---
+
+## 10. Architecture Applicative et Points d'Entrée
+
+```mermaid
+graph TD
+    subgraph Interfaces Publiques et Métier
+        UI_CATALOGUE["Catalogue Public<br/>(/catalogue)"]
+        UI_MEMBER["Espace Adhérent<br/>(/member)"]
+        UI_DESK["Guichet Bibliothécaire<br/>(/librarian/desk)"]
+        UI_IMPORT["Import Open Library Web<br/>(/librarian/import)"]
+        UI_STATS["Statistiques & Rotation<br/>(/admin/stats)"]
+        CLI_IMPORT["Commande CLI par Lot<br/>(app:import-isbn)"]
+        CLI_EXPIRE["Purge Réservations<br/>(app:reservations:expire)"]
+    end
+
+    subgraph Couche Sécurité & Contrôle
+        SEC_FW["Firewall Symfony"]
+        VOTER_L["LoanVoter"]
+        VOTER_R["ReservationVoter"]
+    end
+
+    subgraph Services du Domaine
+        SRV_LOAN["LoanService"]
+        SRV_RES["ReservationQueueService"]
+        SRV_TRANS["TransferService"]
+        SRV_PEN["PenaltyCalculator"]
+        SRV_STAT["StatisticsService"]
+        SRV_IMP["BookImporter"]
+        CLI_OL["OpenLibraryClient"]
+    end
+
+    subgraph Persistance & Concurrence
+        ORM["Doctrine ORM 3.8"]
+        DB[(MySQL 8.0 InnoDB<br/>REPEATABLE READ)]
+    end
+
+    UI_CATALOGUE --> SEC_FW
+    UI_MEMBER --> VOTER_L
+    UI_MEMBER --> VOTER_R
+    UI_DESK --> SRV_LOAN
+    UI_DESK --> SRV_RES
+    UI_IMPORT --> SRV_IMP
+    CLI_IMPORT --> SRV_IMP
+    SRV_IMP --> CLI_OL
+    UI_STATS --> SRV_STAT
+
+    SRV_LOAN --> ORM
+    SRV_RES --> ORM
+    SRV_TRANS --> ORM
+    SRV_STAT --> ORM
+    ORM --> DB
+```
+
