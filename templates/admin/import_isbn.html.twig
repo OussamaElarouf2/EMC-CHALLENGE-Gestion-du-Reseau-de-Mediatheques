@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Import Open Library — Médiathèque{% endblock %}
+
+{% block body %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 fw-bold mb-1 text-primary">
+            <i class="bi bi-cloud-arrow-down me-2"></i>Import Enrichi Open Library
+        </h1>
+        <p class="text-muted mb-0">Création automatique d'une notice bibliographique complète à partir de son code ISBN.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ path('app_catalogue') }}" class="btn btn-outline-primary">
+            <i class="bi bi-search me-1"></i>Catalogue
+        </a>
+        <a href="{{ path('admin') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-speedometer2 me-1"></i>Administration
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h2 class="h5 fw-bold mb-0 text-dark">
+                    <i class="bi bi-upc-scan me-2 text-primary"></i>1. Import Unitaire par ISBN
+                </h2>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" action="{{ path('app_admin_import_isbn') }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('import_isbn') }}">
+
+                    <div class="mb-3">
+                        <label for="inputIsbn" class="form-label fw-bold">Code ISBN (10 ou 13 chiffres)</label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text"><i class="bi bi-barcode"></i></span>
+                            <input type="text" name="isbn" id="inputIsbn" value="{{ lastIsbn }}" class="form-control font-monospace" placeholder="ex: 978-2-07-061275-8 ou 9782070612758" required autofocus>
+                        </div>
+                        <div class="form-text small">Les tirets et espaces sont nettoyés automatiquement par le système.</div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-cloud-download me-1"></i> Interroger Open Library & Importer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Batch Import Instructions Card -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light py-3">
+                <h2 class="h6 fw-bold mb-0 text-muted">
+                    <i class="bi bi-terminal me-2 text-primary"></i>2. Import par lot en Ligne de Commande (CLI)
+                </h2>
+            </div>
+            <div class="card-body p-4">
+                <p class="small text-muted mb-3">
+                    Pour importer plusieurs dizaines d'ouvrages simultanément à partir d'un fichier texte (un code ISBN par ligne), utilisez la commande Symfony dédiée :
+                </p>
+                <div class="bg-dark text-light p-3 rounded font-monospace small mb-3">
+                    php bin/console app:import-isbn chemin/vers/fichier_isbns.txt
+                </div>
+                <ul class="small text-muted mb-0 ps-3">
+                    <li><strong>Régulation de débit (Rate Limit) :</strong> Pause automatique entre les appels pour respecter la limite Open Library (3 requêtes/seconde).</li>
+                    <li><strong>Résilience :</strong> Un ISBN introuvable ou erroné n'arrête pas le reste du traitement par lot.</li>
+                    <li><strong>Règle DEC-005 :</strong> Le catalogue local a toujours la priorité (les doublons sont sautés sans écraser vos données).</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
