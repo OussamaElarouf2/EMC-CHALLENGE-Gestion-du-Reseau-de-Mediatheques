@@ -394,7 +394,7 @@ Read `docs/Project statement/` and this `plan.md` in full, then **do nothing els
 
 ## 15. Progress tracker (update after every validated step)
 
-**Last update:** 2026-11-17 13:40 · **Current step:** Step 5 complete (ready for Step 6)
+**Last update:** 2026-11-17 16:50 · **Current step:** Step 6 complete (ready for Step 7.1)
 
 ### Day 1
 - [x] 0 Scoping, GitHub repo, briefs copied to `docs/Project statement/`
@@ -404,7 +404,7 @@ Read `docs/Project statement/` and this `plan.md` in full, then **do nothing els
 - [x] 4 Entities + migrations
 - [x] 5 Fixtures + Faker
 - [x] 5b PHP security upgrade (PHP2Shell CVE-2026-109618 / CVE-2026-109619, PHP 8.3.36, upload_progress disabled, platform pinned)
-- [ ] 6 EasyAdmin
+- [x] 6 EasyAdmin
 - [ ] 7.1 Common groundwork (clock, exceptions, test DB)
 - [ ] 7.2 `LoanService::borrow()` + tests
 - [ ] 7.3 `LoanService::return()` + penalties + tests

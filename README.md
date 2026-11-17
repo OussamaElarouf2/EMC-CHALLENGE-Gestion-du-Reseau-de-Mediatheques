@@ -55,7 +55,7 @@ Consultez le guide détaillé : [INSTALL.md](INSTALL.md).
 
 | Niveau | Intitulé | Statut | Points |
 |---|---|---|---|
-| **Niveau 1** | Modèle de données (13 entités), migrations, fixtures réalistes, back-office | En cours (Étapes 0 à 5 validées) | 15 pts |
+| **Niveau 1** | Modèle de données (13 entités), migrations, fixtures réalistes, back-office | **Validé** (13 entités, fixtures, EasyAdmin) | 15 / 15 pts |
 | **Niveau 2** | Règles métier avancées (quotas, files FIFO, transferts, retards) + Tests automatisés | Prévu (Étape 7) | 15 pts |
 | **Niveau 3** | Espace adhérent, authentification, catalogue public, statistiques | Prévu (Étapes 9 à 12) | 10 pts |
 | **Niveau 4** | Import enrichi Open Library (unitaire et par lot) | Prévu (Étape 13) | 7 pts |
