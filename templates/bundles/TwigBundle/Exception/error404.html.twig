@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page non trouvée (404) — Réseau de Médiathèques{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-8 col-lg-6 text-center">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-5">
+                <div class="display-1 text-primary fw-bold mb-3">
+                    <i class="bi bi-question-circle"></i> 404
+                </div>
+                <h1 class="h3 fw-bold mb-3">Page non trouvée</h1>
+                <p class="text-muted mb-4 lead">
+                    Le document ou la page que vous recherchez n'existe pas, a été déplacé ou est temporairement indisponible.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="{{ path('app_catalogue') }}" class="btn btn-primary px-4">
+                        <i class="bi bi-book me-2"></i>Consulter le catalogue
+                    </a>
+                    <a href="{{ path('app_home') }}" class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-house me-2"></i>Accueil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

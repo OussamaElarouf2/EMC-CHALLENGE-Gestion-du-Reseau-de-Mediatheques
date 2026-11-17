@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accès refusé (403) — Réseau de Médiathèques{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-8 col-lg-6 text-center">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-5">
+                <div class="display-1 text-danger fw-bold mb-3">
+                    <i class="bi bi-shield-lock"></i> 403
+                </div>
+                <h1 class="h3 fw-bold mb-3">Accès refusé</h1>
+                <p class="text-muted mb-4 lead">
+                    Vous n'avez pas les autorisations nécessaires pour accéder à cet espace ou effectuer cette action.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    {% if not app.user %}
+                        <a href="{{ path('app_login') }}" class="btn btn-primary px-4">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+                        </a>
+                    {% else %}
+                        <a href="{{ path('app_catalogue') }}" class="btn btn-primary px-4">
+                            <i class="bi bi-book me-2"></i>Retour au catalogue
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
