@@ -1,4 +1,4 @@
-FROM php:8.2-fpm-alpine
+FROM php:8.3.36-fpm-alpine
 
 # Install php extension installer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
@@ -14,6 +14,9 @@ RUN install-php-extensions \
     zip \
     opcache
 
+# Security hardening: disable upload progress (PHP2Shell mitigation)
+COPY docker/php/conf.d/security.ini /usr/local/etc/php/conf.d/security.ini
+
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
@@ -25,9 +28,9 @@ WORKDIR /var/www/html
 # Copy app files
 COPY . .
 
-# Run Composer install for production
+# Run Composer install
 ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+RUN composer install --optimize-autoloader --no-interaction --no-scripts
 
 # Permissions
 RUN mkdir -p /var/www/html/var && chown -R www-data:www-data /var/www/html/var /var/www/html/public
