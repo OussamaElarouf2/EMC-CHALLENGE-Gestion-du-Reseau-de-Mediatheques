@@ -74,7 +74,13 @@ class Reservation
         $this->pickupBranch = $pickupBranch;
         $this->status = $status;
         $this->createdAt = $createdAt;
-        $this->activeMemberEditionKey = $activeMemberEditionKey;
+        if ($activeMemberEditionKey !== null) {
+            $this->activeMemberEditionKey = $activeMemberEditionKey;
+        } elseif (in_array($status, [ReservationStatus::WAITING, ReservationStatus::READY], true) && $member->getId() !== null && $edition->getId() !== null) {
+            $this->activeMemberEditionKey = self::computeActiveKey($member->getId(), $edition->getId());
+        } else {
+            $this->activeMemberEditionKey = null;
+        }
     }
 
     public static function computeActiveKey(int $memberId, int $editionId): string
