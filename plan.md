@@ -322,7 +322,7 @@ Quota reached · duration per plan · expired subscription · unpaid penalty blo
 | 13 | **Open Library** (section 8): client, ISBN form, batch command, report, tests with mocks. | **Completed** (85 tests passing, client with throttled rate limit, CLI batch + web single, mock tests) | External API | 4 |
 | 14 | **Docker finalization**, entrypoint (migrations + fixtures), `INSTALL.md`, **test on a fresh clone of the repo**. | **Completed** (auto migrations + fixtures on entrypoint, complete INSTALL.md, sample dataset) | Delivery | 5 |
 | 15 | **Documentation**: `README.md`, `DECISIONS.md`, `MODELE.md` finalized. | **Completed** (DEC-001 to DEC-014, 85-test matrix, application architecture, completed README) | Docs | — |
-| 16 | **Design note** (1-page PDF): why this subject, how I split the need, architecture choices, order of work, role of AI, what I would do with one more week. Built from `docs/ai-log/`. | 1 h | PDF | 10 pts |
+| 16 | **Design note** (1-page PDF): why this subject, how I split the need, architecture choices, order of work, role of AI, what I would do with one more week. Built from `docs/ai-log/`. | **Completed** (1-page A4 PDF note-de-cadrage.pdf + markdown version docs/NOTE_CADRAGE.md) | PDF | 10 pts |
 | 17 | **AI traces**: export sessions, ZIP + `LISEZMOI.md` (tools used and for what; archive contents; 3 lessons: where AI saved time, where it was wrong, how I spotted it). **Remove secrets.** | 30 min | Bonus ZIP | +15 |
 | 18 | **Final check** (section 11 checklist) and email submission. | 30 min | Submission | — |
 

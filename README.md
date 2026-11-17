@@ -76,6 +76,7 @@ php bin/phpunit
 
 ## 6. Documentation de Référence
 
+- [Note de Cadrage Conceptuelle (PDF)](note-de-cadrage.pdf) : Note de synthèse d'une page (A4) sur les choix d'architecture, les arbitrages de concurrence, le rôle de l'IA et les perspectives (10 pts). Également consultable en [Markdown](docs/NOTE_CADRAGE.md).
 - [Guide d'Installation](INSTALL.md) : Prérequis, déploiement Docker clé en main en 1 commande et dépannage.
 - [Modèle de Données](docs/MODELE.md) : Schéma entité-association Mermaid, dictionnaire de données, contraintes d'intégrité, verrous de concurrence et matrice complète des 85 tests.
 - [Journal des Décisions d'Architecture](docs/DECISIONS.md) : Réponses argumentées aux 5 questions du sujet et arbitrages techniques formels (**DEC-001 à DEC-014**).
