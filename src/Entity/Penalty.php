@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Enum\PenaltyReason;
+use App\Repository\PenaltyRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: PenaltyRepository::class)]
 #[ORM\Table(name: 'penalty')]
 class Penalty
 {
