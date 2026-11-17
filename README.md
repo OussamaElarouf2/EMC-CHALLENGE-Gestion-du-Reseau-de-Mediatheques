@@ -59,7 +59,7 @@ Consultez le guide détaillé : [INSTALL.md](INSTALL.md).
 | **Niveau 2** | Règles métier avancées (quotas, files FIFO, transferts, retards) + Tests automatisés | **Validé** (29 tests unitaires, intégration et concurrence) | 15 / 15 pts |
 | **Niveau 3** | Espace adhérent, authentification, catalogue public, statistiques | **Validé** (Auth 3 rôles, catalogue public, espace adhérent, guichet express, statistiques & rotation, 71 tests) | 10 / 10 pts |
 | **Niveau 4** | Import enrichi Open Library (unitaire et par lot) | **Validé** (Client API avec rate limiting, import web unitaire, commande CLI par lot `app:import-isbn`, tests MockHttpClient, 85 tests) | 7 / 7 pts |
-| **Niveau 5** | Environnement Docker clé en main, `INSTALL.md`, reproductibilité | En cours (Socle Docker actif) | 8 pts |
+| **Niveau 5** | Environnement Docker clé en main, `INSTALL.md`, reproductibilité | **Validé** (Déploiement en 1 commande `docker compose up --build -d`, migrations & fixtures automatiques, `INSTALL.md`) | 8 / 8 pts |
 
 ---
 
